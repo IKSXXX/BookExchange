@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BookSwap</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container flex items-center justify-between py-4">
+            <a href="/" class="navbar-brand">BookSwap</a>
+            <nav class="flex items-center gap-6">
+                <a href="/" class="nav-link font-semibold">Главная</a>
+                <a href="/catalog" class="nav-link font-semibold">Каталог</a>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a href="/profile" class="nav-link font-semibold">Профиль</a>
+                    <a href="/logout" class="btn btn-exchange">Выйти</a>
+                }
+                else
+                {
+                    <a href="/login" class="btn btn-exchange">Войти</a>
+                }
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer class="bg-white text-center py-8 mt-12 text-muted">
+        <div class="container">
+            © @DateTime.Now.Year BookSwap — Обменивайся книгами с радостью!
+        </div>
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

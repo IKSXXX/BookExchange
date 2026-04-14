@@ -1,0 +1,124 @@
+﻿@model BookExchange.ViewModels.BookDetailsViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="min-h-screen bg-gradient-to-b from-[#FFFBF5] to-white">
+    <div class="container mx-auto px-4 py-8">
+        <a href="/catalog" class="inline-flex items-center gap-2 text-[#4CAF50] font-semibold hover:text-[#388E3C] mb-6 hover:gap-3 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            Вернуться в каталог
+        </a>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Левая колонка: обложка -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-24">
+                    <div class="bg-white rounded-2xl overflow-hidden border-2 border-[#E0E0E0] shadow-xl">
+                        <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                            <img src="@Model.CoverUrl" alt="@Model.Title" class="w-full h-full object-cover" />
+                        </div>
+                        @if (!Model.IsAvailable)
+                        {
+                            <div class="bg-[#E67E22] text-white text-center py-2 font-semibold">Недоступна для обмена</div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая колонка: детали -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl p-8 border-2 border-[#E0E0E0] mb-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h1 class="text-4xl font-bold text-[#2C3E50] mb-2">@Model.Title</h1>
+                            <p class="text-xl text-[#7F8C8D] mb-4">@Model.Author</p>
+                        </div>
+                        <span class="text-sm font-semibold px-4 py-2 bg-gradient-to-r from-[#4CAF50] to-[#8BC34A] text-white rounded-full shadow-lg">@Model.Genre</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="flex items-center gap-2 text-[#7F8C8D]">
+                            <svg class="w-5 h-5 text-[#4CAF50]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                            <div><div class="text-xs">Состояние</div><div class="font-semibold text-[#2C3E50] capitalize">@Model.Condition</div></div>
+                        </div>
+                        <div class="flex items-center gap-2 text-[#7F8C8D]">
+                            <svg class="w-5 h-5 text-[#E67E22]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            <div><div class="text-xs">Год издания</div><div class="font-semibold text-[#2C3E50]">@Model.Year</div></div>
+                        </div>
+                        <div class="flex items-center gap-2 text-[#7F8C8D]">
+                            <svg class="w-5 h-5 text-[#8BC34A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
+                            <div><div class="text-xs">Язык</div><div class="font-semibold text-[#2C3E50]">@Model.Language</div></div>
+                        </div>
+                        <div class="flex items-center gap-2 text-[#7F8C8D]">
+                            <svg class="w-5 h-5 text-[#FF8C42]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                            <div><div class="text-xs">Статус</div><div class="font-semibold @(Model.IsAvailable ? "text-[#4CAF50]" : "text-[#E67E22]")">@(Model.IsAvailable ? "Доступна" : "Занята")</div></div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-[#E0E0E0] pt-6">
+                        <h2 class="text-lg font-bold text-[#2C3E50] mb-3">Описание</h2>
+                        <p class="text-[#7F8C8D] leading-relaxed">@Model.Description</p>
+                    </div>
+                </div>
+
+                <!-- Владелец книги -->
+                <div class="bg-white rounded-2xl p-6 border-2 border-[#E0E0E0] mb-6">
+                    <h2 class="text-lg font-bold text-[#2C3E50] mb-4">Владелец книги</h2>
+                    <div class="flex items-start gap-4">
+                        <a href="/user/@Model.Owner.Id">
+                            <img src="@Model.Owner.Avatar" alt="@Model.Owner.Name" class="w-16 h-16 rounded-full object-cover border-2 border-[#4CAF50] hover:scale-105 transition-transform cursor-pointer" />
+                        </a>
+                        <div class="flex-1">
+                            <a href="/user/@Model.Owner.Id" class="text-lg font-bold text-[#2C3E50] hover:text-[#4CAF50] transition-colors">@Model.Owner.Name</a>
+                            <div class="flex items-center gap-4 mt-2 text-sm text-[#7F8C8D]">
+                                <span class="flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg> @Model.Owner.BooksCount книг</span>
+                                <span class="flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg> @Model.Owner.ExchangesCount обменов</span>
+                            </div>
+                            <a href="/user/@Model.Owner.Id" class="inline-block mt-3 text-sm text-[#4CAF50] font-semibold hover:text-[#388E3C]">Смотреть профиль →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Кнопка обмена или сообщение о недоступности -->
+                @if (Model.IsAvailable && !Model.IsCurrentUserOwner)
+                {
+                    <div class="bg-gradient-to-br from-[#4CAF50] to-[#8BC34A] rounded-2xl p-8 text-white">
+                        <h2 class="text-2xl font-bold mb-3">Готовы обменяться?</h2>
+                        <p class="mb-6 opacity-90">Выберите свои книги, которые вы хотите предложить в обмен</p>
+                        <a href="/exchange/create/@Model.Id" class="inline-flex items-center gap-2 bg-white text-[#4CAF50] px-8 py-4 rounded-xl font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-105">Предложить обмен</a>
+                    </div>
+                }
+                else if (!Model.IsAvailable)
+                {
+                    <div class="bg-[#FFF3E0] border-2 border-[#FF8C42] rounded-2xl p-6">
+                        <h3 class="font-bold text-[#E67E22] mb-2">Книга сейчас недоступна</h3>
+                        <p class="text-[#7F8C8D]">Эта книга уже участвует в обмене. Попробуйте найти другую книгу в каталоге или добавьте ее в избранное, чтобы не пропустить, когда она станет доступна.</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Похожие книги (опционально) -->
+        @if (Model.SimilarBooks.Any())
+        {
+            <div class="mt-12">
+                <h2 class="text-2xl font-bold text-[#2C3E50] mb-4">Похожие книги</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    @foreach (var book in Model.SimilarBooks)
+                    {
+                        <a href="/book/@book.Id" class="group bg-white rounded-2xl overflow-hidden border-2 border-[#E0E0E0] hover:border-[#4CAF50] transition-all hover:shadow-xl hover:shadow-green-500/20 hover:-translate-y-1">
+                            <div class="aspect-[3/4] overflow-hidden bg-gray-100">
+                                <img src="@book.CoverUrl" alt="@book.Title" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                            </div>
+                            <div class="p-3">
+                                <h3 class="font-bold text-sm text-[#2C3E50] line-clamp-1">@book.Title</h3>
+                                <p class="text-xs text-[#7F8C8D]">@book.Author</p>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

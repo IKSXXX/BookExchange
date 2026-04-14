@@ -1,0 +1,335 @@
+﻿@model BookExchange.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Главная";
+}
+
+<!-- КАРУСЕЛЬ (слайдер) -->
+<section class="hero-carousel">
+    <div class="carousel-container">
+        <div class="carousel-slides" id="carouselSlides">
+            <div class="carousel-slide" style="background: linear-gradient(135deg, #1e3c2c, #2e7d32);">
+                <div class="carousel-content">
+                    <span class="carousel-badge">🔥 Книга недели</span>
+                    <h2>«Преступление и наказание»</h2>
+                    <p>Ф. Достоевский — классика, которая вдохновляет уже 150 лет. Обменяй прямо сейчас!</p>
+                    <a href="/book/1" class="carousel-btn">Подробнее →</a>
+                </div>
+            </div>
+            <div class="carousel-slide" style="background: linear-gradient(135deg, #2c3e50, #1a252f);">
+                <div class="carousel-content">
+                    <span class="carousel-badge">📚 Новинки сезона</span>
+                    <h2>Свежие поступления</h2>
+                    <p>Добавлены десятки книг современных авторов. Найди свою следующую любимую книгу!</p>
+                    <a href="/catalog" class="carousel-btn">Смотреть новинки →</a>
+                </div>
+            </div>
+            <div class="carousel-slide" style="background: linear-gradient(135deg, #8B4513, #A0522D);">
+                <div class="carousel-content">
+                    <span class="carousel-badge">⭐ Топ обменов</span>
+                    <h2>Самые популярные книги</h2>
+                    <p>1984, Мастер и Маргарита, Война и мир — их ищут чаще всего. Успей предложить обмен!</p>
+                    <a href="/catalog?sort=popular" class="carousel-btn">В топ →</a>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-btn-prev" id="carouselPrev">❮</button>
+        <button class="carousel-btn-next" id="carouselNext">❯</button>
+        <div class="carousel-dots" id="carouselDots"></div>
+    </div>
+</section>
+
+<!-- ОСНОВНОЙ ГЕРО (был ранее) -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF8C42" stroke-width="2">
+                <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg>
+            <span>Некоммерческий проект для любителей книг</span>
+        </div>
+
+        <h1 class="hero-title">
+            Обменивайся книгами<br>
+            <span class="hero-highlight">с радостью!</span>
+        </h1>
+
+        <p class="hero-description">
+            Присоединяйся к сообществу читателей. Дари книгам вторую жизнь, находи новые истории и делись любимыми произведениями!
+        </p>
+
+        <div class="hero-buttons">
+            <a href="/catalog" class="btn btn-primary btn-large">
+                Найти книгу
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5l7 7-7 7" />
+                </svg>
+            </a>
+            <a href="/profile" class="btn btn-secondary btn-large">
+                Добавить книги
+            </a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">2,500+</div>
+                <div class="stat-label">книг</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div class="stat-number">850+</div>
+                <div class="stat-label">читателей</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div class="stat-number">1,200+</div>
+                <div class="stat-label">обменов</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Как это работает -->
+<section class="how-it-works">
+    <div class="container">
+        <div class="section-header">
+            <h2>Как начать обмениваться?</h2>
+            <p>Три простых шага к новым книгам и новым знакомствам</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-icon">📚</div>
+                <h3>Добавьте свои книги</h3>
+                <p>Загрузите фото и описание книг, которыми готовы поделиться</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-icon">🔍</div>
+                <h3>Найдите интересующую</h3>
+                <p>Используйте поиск и фильтры, чтобы найти книгу мечты</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-icon">🤝</div>
+                <h3>Предложите обмен</h3>
+                <p>Договоритесь с владельцем и отправляйте книги друг другу</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Почему BookSwap -->
+<section class="benefits-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Почему BookSwap?</h2>
+            <p>Мы создали платформу, где каждый может найти новую книгу и поделиться прочитанной</p>
+        </div>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon green">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <h3>Огромный выбор</h3>
+                <p>Тысячи книг от читателей со всей страны</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon orange">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <h3>Простой обмен</h3>
+                <p>Выбирайте книги и создавайте обмен в пару кликов</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon green">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <h3>Дружное сообщество</h3>
+                <p>Общайтесь с единомышленниками и находите новых друзей</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon amber">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <h3>Бесплатно</h3>
+                <p>Обменивайтесь книгами без платы. Только радость чтения!</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Популярные жанры -->
+<section class="popular-genres">
+    <div class="container">
+        <div class="section-header">
+            <h2>Популярные жанры</h2>
+            <p>Выберите то, что вам по душе</p>
+        </div>
+        <div class="genres-cloud">
+            <a href="/catalog?genreIds=Классика" class="genre-tag">Классика</a>
+            <a href="/catalog?genreIds=Фэнтези" class="genre-tag">Фэнтези</a>
+            <a href="/catalog?genreIds=Антиутопия" class="genre-tag">Антиутопия</a>
+            <a href="/catalog?genreIds=Магический реализм" class="genre-tag">Магический реализм</a>
+            <a href="/catalog?genreIds=Научная литература" class="genre-tag">Научная литература</a>
+            <a href="/catalog?genreIds=Философия" class="genre-tag">Философия</a>
+            <a href="/catalog?genreIds=Детская литература" class="genre-tag">Детская литература</a>
+            <a href="/catalog?genreIds=Современная проза" class="genre-tag">Современная проза</a>
+            <a href="/catalog?genreIds=Фантастика" class="genre-tag">Фантастика</a>
+        </div>
+    </div>
+</section>
+
+<!-- Недавно добавленные книги -->
+<section class="recent-books-section">
+    <div class="container">
+        <div class="section-header with-link">
+            <div>
+                <h2>Недавно добавленные книги</h2>
+                <p>Свежие поступления от наших читателей</p>
+            </div>
+            <a href="/catalog" class="view-all-link">Смотреть все →</a>
+        </div>
+        <div class="recent-books-grid">
+            @foreach (var book in Model.RecentBooks)
+            {
+                <a href="/book/@book.Id" class="recent-book-card">
+                    <img src="@book.CoverUrl" alt="@book.Title" class="recent-book-img" />
+                    <div class="recent-book-info">
+                        <h3 class="recent-book-title">@book.Title</h3>
+                        <p class="recent-book-author">@book.Author</p>
+                        <div class="recent-book-tags">
+                            <span class="tag-genre">@book.Genre</span>
+                            <span class="tag-condition">@book.Condition</span>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+        <div class="mobile-view-all">
+            <a href="/catalog" class="view-all-link">Смотреть все →</a>
+        </div>
+    </div>
+</section>
+
+<!-- Отзывы -->
+<section class="testimonials">
+    <div class="container">
+        <div class="section-header">
+            <h2>Что говорят наши читатели</h2>
+            <p>Уже более 850 человек обмениваются книгами с удовольствием</p>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-rating">★★★★★</div>
+                <p class="testimonial-text">«Отличный сервис! Обменял «1984» на «Мастера и Маргариту» — всё прошло быстро и удобно. Рекомендую!»</p>
+                <div class="testimonial-author">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Алексей">
+                    <div>
+                        <strong>Алексей</strong>
+                        <span>3 успешных обмена</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-rating">★★★★★</div>
+                <p class="testimonial-text">«Нашла здесь редкую книгу по философии. Очень приятное общение с владельцем, уже второй раз обмениваюсь!»</p>
+                <div class="testimonial-author">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Екатерина">
+                    <div>
+                        <strong>Екатерина</strong>
+                        <span>5 обменов</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-rating">★★★★★</div>
+                <p class="testimonial-text">«Добавил свои книги — через день поступил запрос. Удобный чат, поддержка отвечает быстро. Спасибо!»</p>
+                <div class="testimonial-author">
+                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Дмитрий">
+                    <div>
+                        <strong>Дмитрий</strong>
+                        <span>10 книг в библиотеке</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="container text-center">
+        <h2>Готов начать обмен?</h2>
+        <p>Добавь свои книги в каталог и начни обмениваться прямо сейчас!</p>
+        <a href="/profile" class="btn btn-light btn-large">Добавить книги →</a>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // КАРУСЕЛЬ
+        (function() {
+            const slides = document.getElementById('carouselSlides');
+            const prevBtn = document.getElementById('carouselPrev');
+            const nextBtn = document.getElementById('carouselNext');
+            const dotsContainer = document.getElementById('carouselDots');
+            let currentIndex = 0;
+            let slideCount = document.querySelectorAll('.carousel-slide').length;
+            let autoInterval;
+
+            function createDots() {
+                dotsContainer.innerHTML = '';
+                for (let i = 0; i < slideCount; i++) {
+                    const dot = document.createElement('div');
+                    dot.classList.add('carousel-dot');
+                    if (i === currentIndex) dot.classList.add('active');
+                    dot.addEventListener('click', () => goToSlide(i));
+                    dotsContainer.appendChild(dot);
+                }
+            }
+
+            function updateDots() {
+                const dots = document.querySelectorAll('.carousel-dot');
+                dots.forEach((dot, idx) => {
+                    if (idx === currentIndex) dot.classList.add('active');
+                    else dot.classList.remove('active');
+                });
+            }
+
+            function goToSlide(index) {
+                if (index < 0) index = slideCount - 1;
+                if (index >= slideCount) index = 0;
+                currentIndex = index;
+                slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+                updateDots();
+                resetAutoPlay();
+            }
+
+            function nextSlide() { goToSlide(currentIndex + 1); }
+            function prevSlide() { goToSlide(currentIndex - 1); }
+
+            function startAutoPlay() {
+                autoInterval = setInterval(() => nextSlide(), 5000);
+            }
+            function resetAutoPlay() {
+                clearInterval(autoInterval);
+                startAutoPlay();
+            }
+
+            if (prevBtn && nextBtn) {
+                prevBtn.addEventListener('click', prevSlide);
+                nextBtn.addEventListener('click', nextSlide);
+            }
+            createDots();
+            startAutoPlay();
+        })();
+    </script>
+}
