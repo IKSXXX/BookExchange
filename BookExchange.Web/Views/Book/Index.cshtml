@@ -3,11 +3,8 @@
     ViewData["Title"] = "Каталог";
 }
 
-<div class="section--tight" style="padding-top:2rem;">
+<div class="section--tight" style="padding-top:1rem;">
     <div class="container">
-        <h1 class="mb-2">Каталог книг</h1>
-        <p class="text-muted mb-6">Найдено изданий: <strong>@Model.Pagination.TotalItems</strong></p>
-
         <form id="catalogForm" method="get">
             <div class="catalog-layout">
                 <aside class="catalog-side">
@@ -86,6 +83,10 @@
                 </aside>
 
                 <div class="catalog-results">
+                    <div class="catalog-header">
+                        <h1 class="mb-1">Каталог книг</h1>
+                        <p class="text-muted text-sm">Найдено изданий: <strong>@Model.Pagination.TotalItems</strong></p>
+                    </div>
                     @if (Model.Books.Count == 0)
                     {
                         <div class="empty-state card">

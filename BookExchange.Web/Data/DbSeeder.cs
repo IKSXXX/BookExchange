@@ -102,7 +102,11 @@ public static class DbSeeder
                 new() { Title = "Шерлок Холмс", Author = "А.К. Дойл", Genre = "Детектив", Condition = BookCondition.Excellent, Year = 1892, Description = "Сборник рассказов о гениальном сыщике.", CoverImagePath = "https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=400&h=600&fit=crop", OwnerId = userMap["dmitry"].Id, IsAvailable = true },
                 new() { Title = "Анна Каренина", Author = "Л. Толстой", Genre = "Классика", Condition = BookCondition.Good, Year = 1878, Description = "Трагическая история любви в высшем свете Российской империи.", CoverImagePath = "https://images.unsplash.com/photo-1589998059171-988d887df646?w=400&h=600&fit=crop", OwnerId = userMap["anna"].Id, IsAvailable = true },
                 new() { Title = "Процесс", Author = "Ф. Кафка", Genre = "Классика", Condition = BookCondition.Acceptable, Year = 1925, Description = "Философский роман о безумии бюрократической системы.", CoverImagePath = "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&h=600&fit=crop", OwnerId = userMap["olga"].Id, IsAvailable = true },
-                new() { Title = "Заводной апельсин", Author = "Э. Бёрджесс", Genre = "Антиутопия", Condition = BookCondition.Good, Year = 1962, Description = "Провокационный роман о подростке-психопате и социальной инженерии.", CoverImagePath = "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop", OwnerId = userMap["pavel"].Id, IsAvailable = true }
+                new() { Title = "Заводной апельсин", Author = "Э. Бёрджесс", Genre = "Антиутопия", Condition = BookCondition.Good, Year = 1962, Description = "Провокационный роман о подростке-психопате и социальной инженерии.", CoverImagePath = "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop", OwnerId = userMap["pavel"].Id, IsAvailable = true },
+                new() { Title = "Великий Гэтсби", Author = "Ф.С. Фицджеральд", Genre = "Классика", Condition = BookCondition.Excellent, Year = 1925, Description = "История любви и разочарования в эпоху джаза.", CoverImagePath = "https://images.unsplash.com/photo-1535905557558-afc4877a26fc?w=400&h=600&fit=crop", OwnerId = userMap["maria"].Id, IsAvailable = true },
+                new() { Title = "О дивный новый мир", Author = "О. Хаксли", Genre = "Антиутопия", Condition = BookCondition.Good, Year = 1932, Description = "Антиутопия о мире тотального комфорта и потери человечности.", CoverImagePath = "https://images.unsplash.com/photo-1589998059171-988d887df646?w=400&h=600&fit=crop", OwnerId = userMap["sergey"].Id, IsAvailable = true },
+                new() { Title = "Убить пересмешника", Author = "Х. Ли", Genre = "Классика", Condition = BookCondition.Good, Year = 1960, Description = "Глубокий роман о расовых предрассудках и справедливости глазами ребёнка.", CoverImagePath = "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop", OwnerId = userMap["olga"].Id, IsAvailable = true },
+                new() { Title = "Над пропастью во ржи", Author = "Дж. Сэлинджер", Genre = "Классика", Condition = BookCondition.Excellent, Year = 1951, Description = "Исповедь подростка о лицемерии взрослого мира.", CoverImagePath = "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&h=600&fit=crop", OwnerId = userMap["anna"].Id, IsAvailable = true }
             };
             await ctx.Books.AddRangeAsync(books);
             await ctx.SaveChangesAsync();
@@ -166,5 +170,20 @@ public static class DbSeeder
             );
             await ctx.SaveChangesAsync();
         }
+
+        // Идемпотентно добавляем новые книги, которых ещё нет в БД (по названию).
+        var extraBooks = new List<Book>
+        {
+            new() { Title = "Великий Гэтсби",       Author = "Ф.С. Фицджеральд", Genre = "Классика",   Condition = BookCondition.Excellent, Year = 1925, Description = "История любви и разочарования в эпоху джаза.", CoverImagePath = "https://images.unsplash.com/photo-1535905557558-afc4877a26fc?w=400&h=600&fit=crop", OwnerId = userMap["maria"].Id,  IsAvailable = true },
+            new() { Title = "О дивный новый мир",   Author = "О. Хаксли",        Genre = "Антиутопия", Condition = BookCondition.Good,      Year = 1932, Description = "Антиутопия о мире тотального комфорта и потери человечности.", CoverImagePath = "https://images.unsplash.com/photo-1589998059171-988d887df646?w=400&h=600&fit=crop", OwnerId = userMap["sergey"].Id, IsAvailable = true },
+            new() { Title = "Убить пересмешника",   Author = "Х. Ли",            Genre = "Классика",   Condition = BookCondition.Good,      Year = 1960, Description = "Глубокий роман о расовых предрассудках и справедливости глазами ребёнка.", CoverImagePath = "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop", OwnerId = userMap["olga"].Id,   IsAvailable = true },
+            new() { Title = "Над пропастью во ржи", Author = "Дж. Сэлинджер",    Genre = "Классика",   Condition = BookCondition.Excellent, Year = 1951, Description = "Исповедь подростка о лицемерии взрослого мира.", CoverImagePath = "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&h=600&fit=crop", OwnerId = userMap["anna"].Id,   IsAvailable = true }
+        };
+        foreach (var b in extraBooks)
+        {
+            if (!await ctx.Books.AnyAsync(x => x.Title == b.Title))
+                ctx.Books.Add(b);
+        }
+        await ctx.SaveChangesAsync();
     }
 }
