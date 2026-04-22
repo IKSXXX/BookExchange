@@ -1,0 +1,29 @@
+@model List<QuizQuestion>
+@{ ViewData["Title"] = "Вопросы игры"; }
+
+<section class="section">
+    <h1>🎲 Вопросы для игры</h1>
+    <a asp-action="Index" class="btn btn-exchange">← Назад</a>
+    <a asp-action="CreateQuiz" class="btn btn-primary">+ Добавить вопрос</a>
+
+    <div class="panel" style="margin-top:1rem;">
+        <table class="table">
+            <thead><tr><th>Цитата</th><th>Правильный ответ</th><th>Книга</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var q in Model)
+                {
+                    <tr>
+                        <td>@q.Quote</td>
+                        <td>@q.CorrectAnswer</td>
+                        <td>@(q.Book?.Title ?? "")</td>
+                        <td>
+                            <form asp-action="DeleteQuiz" method="post" class="inline-form" onsubmit="return confirm('Удалить?');">
+                                @Html.AntiForgeryToken()<input type="hidden" name="id" value="@q.Id" /><button class="btn btn-danger">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

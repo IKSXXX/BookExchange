@@ -1,0 +1,90 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Главная";
+}
+
+<section class="hero-carousel">
+    <div class="carousel-container">
+        <div class="carousel-slides" id="carouselSlides">
+            <div class="carousel-slide" style="background: linear-gradient(135deg, #1e3c2c, #2e7d32);">
+                <div class="carousel-content">
+                    <span class="carousel-badge">📚 Добро пожаловать</span>
+                    <h2>Обменивайся книгами с радостью!</h2>
+                    <p>Зарегистрируйся, добавь свои книги и найди новые истории у других читателей.</p>
+                    <a href="/catalog" class="carousel-btn">В каталог →</a>
+                </div>
+            </div>
+            <div class="carousel-slide" style="background: linear-gradient(135deg, #2c3e50, #1a252f);">
+                <div class="carousel-content">
+                    <span class="carousel-badge">🔀 Случайная книга</span>
+                    <h2>Не знаешь что почитать?</h2>
+                    <p>Нажми кнопку и мы подберём случайную книгу из каталога.</p>
+                    <a href="/book/random" class="carousel-btn">Подобрать →</a>
+                </div>
+            </div>
+            <div class="carousel-slide" style="background: linear-gradient(135deg, #8B4513, #A0522D);">
+                <div class="carousel-content">
+                    <span class="carousel-badge">⭐ Рейтинг</span>
+                    <h2>Репутация имеет значение</h2>
+                    <p>Оставляй отзывы после обменов — помоги сообществу расти.</p>
+                    <a href="/catalog" class="carousel-btn">К каталогу →</a>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-btn-prev" id="carouselPrev">❮</button>
+        <button class="carousel-btn-next" id="carouselNext">❯</button>
+        <div class="carousel-dots" id="carouselDots"></div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="two-col">
+        <!-- КНИГА ДНЯ -->
+        <div class="panel">
+            <h2 class="section-title">📖 Книга дня</h2>
+            @if (Model.BookOfTheDay != null)
+            {
+                <div class="book-of-day">
+                    <partial name="_BookCard" model="Model.BookOfTheDay" />
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">Сегодня админ ещё не выбрал книгу дня.</p>
+            }
+        </div>
+
+        <!-- МИНИ-ИГРА -->
+        <div class="panel">
+            <h2 class="section-title">🎲 Угадай книгу по цитате</h2>
+            <div id="quizWidget" data-initial='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.QuizQuestion))'>
+                <p class="text-muted">Загрузка...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="panel">
+        <h2 class="section-title">🤖 AI-помощник «Что почитать?»</h2>
+        <p class="text-muted" style="margin-bottom: 1rem;">
+            Опиши, что хочешь почитать — и мы подберём книги из каталога.
+            <em>(Это заглушка: поиск идёт по ключевым словам.)</em>
+        </p>
+        <form id="aiForm" class="flex gap-2" style="max-width: 600px;">
+            <input name="query" type="text" class="form-input" placeholder="Например: фэнтези про магию" required />
+            <button type="submit" class="btn btn-primary">Подобрать</button>
+        </form>
+        <div id="aiResults" class="catalog-grid" style="margin-top: 1.5rem;"></div>
+    </div>
+</section>
+
+<section class="section">
+    <h2 class="section-title">🆕 Недавно добавленные</h2>
+    <div class="catalog-grid">
+        @foreach (var b in Model.RecentBooks)
+        {
+            <partial name="_BookCard" model="b" />
+        }
+    </div>
+</section>

@@ -1,0 +1,159 @@
+@model BookDetailsViewModel
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@{
+    ViewData["Title"] = Model.Title;
+    var currentId = UserManager.GetUserId(User);
+    var isOwner = currentId == Model.Owner.Id;
+}
+
+<section class="section">
+    <div class="book-details">
+        <div class="book-details__cover">
+            @if (!string.IsNullOrEmpty(Model.CoverImagePath))
+            {
+                <img src="@Model.CoverImagePath" alt="@Model.Title" />
+            }
+            else
+            {
+                <div class="book-card__cover-placeholder" style="height:600px;font-size:6rem;">📖</div>
+            }
+        </div>
+        <div class="book-details__info">
+            <h1>@Model.Title</h1>
+            <h3 class="text-muted">@Model.Author</h3>
+
+            <div class="book-details__chips">
+                <span class="chip">Жанр: @Model.Genre</span>
+                <span class="chip">Состояние: @Model.ConditionLabel</span>
+                @if (Model.Year.HasValue) { <span class="chip">Год: @Model.Year</span> }
+                @if (!string.IsNullOrEmpty(Model.Language)) { <span class="chip">Язык: @Model.Language</span> }
+                <span class="chip @(Model.IsAvailable ? "chip--ok" : "chip--danger")">
+                    @(Model.IsAvailable ? "Доступна" : "Недоступна")
+                </span>
+            </div>
+
+            <div class="book-details__actions">
+                @if (SignInManager.IsSignedIn(User) && !isOwner && Model.IsAvailable)
+                {
+                    <a asp-controller="Exchange" asp-action="Create" asp-route-bookId="@Model.Id" class="btn btn-primary">Предложить обмен</a>
+                }
+                @if (SignInManager.IsSignedIn(User) && !isOwner)
+                {
+                    <form asp-controller="Favorite" asp-action="Toggle" method="post" class="inline-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="bookId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-exchange">
+                            @(Model.IsFavorite ? "★ В избранном" : "☆ В избранное")
+                        </button>
+                    </form>
+                    <form asp-controller="Wishlist" asp-action="Toggle" method="post" class="inline-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="bookId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-exchange">
+                            @(Model.IsInWishlist ? "✓ В вишлисте" : "+ В вишлист")
+                        </button>
+                    </form>
+                }
+                @if (isOwner)
+                {
+                    <a asp-controller="Book" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-exchange">Редактировать</a>
+                    <form asp-controller="Book" asp-action="Delete" method="post" class="inline-form" onsubmit="return confirm('Удалить книгу?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button class="btn btn-danger">Удалить</button>
+                    </form>
+                }
+            </div>
+
+            <div class="owner-card">
+                <h4>Владелец</h4>
+                <div class="owner-card__row">
+                    @if (!string.IsNullOrEmpty(Model.Owner.Avatar))
+                    {
+                        <img src="@Model.Owner.Avatar" alt="@Model.Owner.Name" class="avatar" />
+                    }
+                    <div>
+                        <a asp-controller="User" asp-action="Details" asp-route-id="@Model.Owner.Id">@Model.Owner.Name</a>
+                        <div class="text-muted">Книг: @Model.Owner.BooksCount &middot; Рейтинг: @Model.Owner.Rating.ToString("0.0")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Табы -->
+    <div class="tabs" style="margin-top: 2rem;">
+        <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="description">Описание</button>
+            <button class="tab-btn" data-tab="discussions">Обсуждения (@Model.Discussions.Count)</button>
+            <button class="tab-btn" data-tab="similar">Похожие книги</button>
+        </div>
+
+        <div class="tab-content" id="tab-description">
+            <div class="panel">
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <p>@Model.Description</p>
+                }
+                else
+                {
+                    <p class="text-muted">Описание пока не добавлено.</p>
+                }
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-discussions" hidden>
+            <div class="panel">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <form asp-controller="Discussion" asp-action="Create" method="post" class="flex gap-2" style="margin-bottom: 1.5rem;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="bookId" value="@Model.Id" />
+                        <input type="text" name="title" class="form-input" placeholder="Название темы..." required maxlength="300" />
+                        <button type="submit" class="btn btn-primary">Создать тему</button>
+                    </form>
+                }
+                else
+                {
+                    <p class="text-muted">Чтобы создать тему, <a asp-controller="Account" asp-action="Login">войди</a>.</p>
+                }
+
+                @if (Model.Discussions.Count == 0)
+                {
+                    <p class="text-muted">Пока нет обсуждений — будь первым!</p>
+                }
+                else
+                {
+                    <ul class="discussion-list">
+                        @foreach (var d in Model.Discussions)
+                        {
+                            <li>
+                                <a asp-controller="Discussion" asp-action="Details" asp-route-id="@d.Id">@d.Title</a>
+                                <div class="text-muted">
+                                    Автор: @d.AuthorName &middot; Сообщений: @d.MessagesCount &middot; @d.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-similar" hidden>
+            @if (Model.Similar.Count == 0)
+            {
+                <div class="panel text-muted">Похожих книг пока нет.</div>
+            }
+            else
+            {
+                <div class="catalog-grid">
+                    @foreach (var s in Model.Similar)
+                    {
+                        <partial name="_BookCard" model="s" />
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>

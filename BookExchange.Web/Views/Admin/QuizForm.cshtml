@@ -1,0 +1,26 @@
+@model QuizQuestionFormViewModel
+@{ ViewData["Title"] = "Новый вопрос"; }
+
+<section class="section">
+    <div class="panel" style="max-width: 720px; margin: 0 auto;">
+        <h1>Новый вопрос для игры</h1>
+        <form asp-action="CreateQuiz" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="BookId">Книга</label>
+                <select asp-for="BookId" class="form-input">
+                    @foreach (var b in Model.AvailableBooks) { <option value="@b.Id">@b.Title — @b.Author</option> }
+                </select>
+            </div>
+            <div class="form-group"><label asp-for="Quote"></label><textarea asp-for="Quote" class="form-input" rows="2"></textarea></div>
+            <div class="form-group"><label asp-for="CorrectAnswer">Правильный ответ</label><input asp-for="CorrectAnswer" class="form-input" /></div>
+            <div class="form-group"><label asp-for="Option2">Вариант 2</label><input asp-for="Option2" class="form-input" /></div>
+            <div class="form-group"><label asp-for="Option3">Вариант 3</label><input asp-for="Option3" class="form-input" /></div>
+            <div class="form-group"><label asp-for="Option4">Вариант 4</label><input asp-for="Option4" class="form-input" /></div>
+            <button class="btn btn-primary">Сохранить</button>
+            <a asp-action="Quiz" class="btn btn-exchange">Отмена</a>
+        </form>
+    </div>
+</section>

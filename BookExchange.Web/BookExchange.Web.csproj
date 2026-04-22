@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <!-- Таргет .NET 8 — совпадает с BookExchange.Db. -->
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Имя корневого namespace у файлов без @namespace: по умолчанию = имя проекта. -->
+    <RootNamespace>BookExchange.Web</RootNamespace>
+    <!-- Имя сборки (DLL/EXE). -->
+    <AssemblyName>BookExchange.Web</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Подключаем библиотеку с моделями/контекстом (без неё Web не скомпилируется). -->
+    <ProjectReference Include="..\BookExchange.Db\BookExchange.Db.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      Identity UI — дает контроллерам SignInManager, UserManager и т.п.
+      SignalR включён в ASP.NET Core по умолчанию (не требует пакета).
+      AutoMapper — маппинг Entity -> ViewModel и обратно.
+    -->
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+  </ItemGroup>
+
+</Project>

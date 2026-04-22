@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Таргет .NET 8 (LTS), как указано в ТЗ. -->
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- Это "библиотека классов" (Class Library): у неё нет точки входа Main. -->
+    <!-- Веб-проект BookExchange.Web подключит эту сборку через ProjectReference. -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      Пакеты Entity Framework Core + Identity + Npgsql (драйвер PostgreSQL).
+      - Microsoft.EntityFrameworkCore          — базовые типы EF Core (DbContext, DbSet, миграции API).
+      - Microsoft.EntityFrameworkCore.Relational — общая реляционная инфраструктура.
+      - Microsoft.EntityFrameworkCore.Design   — нужен для инструмента 'dotnet ef' (миграции).
+      - Microsoft.AspNetCore.Identity.EntityFrameworkCore — Identity поверх EF Core.
+      - Npgsql.EntityFrameworkCore.PostgreSQL — провайдер PostgreSQL для EF Core.
+    -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
+  </ItemGroup>
+
+</Project>

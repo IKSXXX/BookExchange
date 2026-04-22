@@ -1,0 +1,116 @@
+@model ExchangeDetailsViewModel
+@{ ViewData["Title"] = $"Заявка #{Model.Id}"; }
+
+<section class="section">
+    <h1>Заявка на обмен #@Model.Id</h1>
+    <div class="chip">Статус: @Model.StatusLabel</div>
+
+    <div class="two-col" style="margin-top: 1.5rem;">
+        <div class="panel">
+            <h3>Участники</h3>
+            <div class="owner-card__row">
+                @if (!string.IsNullOrEmpty(Model.Sender.Avatar)) { <img src="@Model.Sender.Avatar" class="avatar" /> }
+                <div><strong>Отправитель:</strong> <a asp-controller="User" asp-action="Details" asp-route-id="@Model.Sender.Id">@Model.Sender.Name</a></div>
+            </div>
+            <div class="owner-card__row">
+                @if (!string.IsNullOrEmpty(Model.Receiver.Avatar)) { <img src="@Model.Receiver.Avatar" class="avatar" /> }
+                <div><strong>Получатель:</strong> <a asp-controller="User" asp-action="Details" asp-route-id="@Model.Receiver.Id">@Model.Receiver.Name</a></div>
+            </div>
+
+            <h3 style="margin-top:1rem;">Книги</h3>
+            <div class="exchange-books">
+                <div>
+                    <strong>Предложена:</strong>
+                    @if (Model.BookOffered != null) { <partial name="_BookCard" model="Model.BookOffered" /> }
+                    else { <p class="text-muted">🎁 безвозмездно</p> }
+                </div>
+                <div>
+                    <strong>Запрошена:</strong>
+                    <partial name="_BookCard" model="Model.BookRequested" />
+                </div>
+            </div>
+
+            <div class="exchange-actions" style="margin-top: 1rem;">
+                @if (Model.CanAccept)
+                {
+                    <form asp-action="Accept" method="post" class="inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><button class="btn btn-primary">✅ Принять</button></form>
+                }
+                @if (Model.CanReject)
+                {
+                    <form asp-action="Reject" method="post" class="inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><button class="btn btn-danger">Отклонить</button></form>
+                }
+                @if (Model.CanCancel)
+                {
+                    <form asp-action="Cancel" method="post" class="inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><button class="btn btn-exchange">Отменить</button></form>
+                }
+                @if (Model.CanComplete)
+                {
+                    <form asp-action="Complete" method="post" class="inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><button class="btn btn-primary">🤝 Завершить</button></form>
+                }
+                @if (Model.CanLeaveReview)
+                {
+                    <a asp-action="LeaveReview" asp-route-id="@Model.Id" class="btn btn-primary">⭐ Оставить отзыв</a>
+                }
+            </div>
+        </div>
+
+        <!-- ЧАТ -->
+        <div class="panel chat-panel">
+            <h3>Чат</h3>
+            <div id="chatMessages" class="chat-messages"
+                 data-exchange-id="@Model.Id"
+                 data-current-user="@Model.CurrentUserId">
+                @foreach (var m in Model.Messages)
+                {
+                    <div class="chat-message @(m.SenderId == Model.CurrentUserId ? "chat-message--own" : "")">
+                        @if (!string.IsNullOrEmpty(m.SenderAvatar)) { <img src="@m.SenderAvatar" class="avatar avatar-sm" /> }
+                        <div>
+                            <strong>@m.SenderName</strong>
+                            <div class="chat-text">@m.Text</div>
+                            <small class="text-muted">@m.SentAt.ToLocalTime():HH:mm dd.MM</small>
+                        </div>
+                    </div>
+                }
+            </div>
+            <form id="chatForm" class="chat-form">
+                <input type="text" id="chatInput" class="form-input" placeholder="Введи сообщение..." maxlength="1000" />
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        (async () => {
+            const exchangeId = parseInt(document.getElementById('chatMessages').dataset.exchangeId);
+            const currentUserId = document.getElementById('chatMessages').dataset.currentUser;
+            const conn = new signalR.HubConnectionBuilder().withUrl('/hubs/chat').withAutomaticReconnect().build();
+
+            conn.on('ReceiveMessage', m => {
+                const el = document.createElement('div');
+                el.className = 'chat-message' + (m.senderId === currentUserId ? ' chat-message--own' : '');
+                const avatar = m.senderAvatar ? `<img src="${m.senderAvatar}" class="avatar avatar-sm" />` : '';
+                const d = new Date(m.sentAt);
+                el.innerHTML = `${avatar}<div><strong>${m.senderName}</strong><div class="chat-text"></div><small class="text-muted">${d.toLocaleTimeString().slice(0,5)} ${d.toLocaleDateString()}</small></div>`;
+                el.querySelector('.chat-text').textContent = m.text;
+                const box = document.getElementById('chatMessages');
+                box.appendChild(el); box.scrollTop = box.scrollHeight;
+            });
+
+            try {
+                await conn.start();
+                await conn.invoke('JoinGroup', exchangeId);
+            } catch (e) { console.error('Chat connect failed', e); }
+
+            document.getElementById('chatForm').addEventListener('submit', async e => {
+                e.preventDefault();
+                const input = document.getElementById('chatInput');
+                const text = input.value.trim();
+                if (!text) return;
+                try { await conn.invoke('SendMessage', exchangeId, text); input.value = ''; }
+                catch (err) { console.error(err); }
+            });
+        })();
+    </script>
+}

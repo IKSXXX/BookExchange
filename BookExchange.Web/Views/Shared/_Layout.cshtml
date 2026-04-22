@@ -1,0 +1,71 @@
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@{
+    var currentUser = SignInManager.IsSignedIn(User) ? await UserManager.GetUserAsync(User) : null;
+    var isAdmin = currentUser != null && await UserManager.IsInRoleAsync(currentUser, "Admin");
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] ?? "BookSwap") — BookSwap</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container flex items-center justify-between py-4">
+            <a href="/" class="navbar-brand">📚 BookSwap</a>
+            <nav class="flex items-center gap-6 nav-links">
+                <a asp-controller="Home" asp-action="Index" class="nav-link">Главная</a>
+                <a asp-controller="Book" asp-action="Index" class="nav-link">Каталог</a>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser!.Id" class="nav-link">Профиль</a>
+                    @if (isAdmin)
+                    {
+                        <a asp-controller="Admin" asp-action="Index" class="nav-link" style="color: var(--orange);">Админка</a>
+                    }
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="inline-form">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-exchange">Выйти (@currentUser!.UserName)</button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login" class="nav-link">Войти</a>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-exchange">Регистрация</a>
+                }
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 1rem;">
+        @if (TempData["Success"] is string ok)
+        {
+            <div class="alert alert-success">@ok</div>
+        }
+        @if (TempData["Error"] is string err)
+        {
+            <div class="alert alert-danger">@err</div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer class="bg-white text-center py-8 mt-12 text-muted">
+        <div class="container">
+            © @DateTime.Now.Year BookSwap — Обменивайся книгами с радостью!
+            &middot; <a href="/privacy">Условия</a>
+            &middot; <a href="mailto:info@bookswap.example">Контакты</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SignalR-клиент берём из CDN, чтобы не тянуть npm. -->
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

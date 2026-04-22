@@ -1,0 +1,78 @@
+using System.ComponentModel.DataAnnotations;
+using BookExchange.Db.Entities;
+
+namespace BookExchange.Web.ViewModels;
+
+public class CreateExchangeViewModel
+{
+    public int BookRequestedId { get; set; }
+    public BookCardViewModel? BookRequested { get; set; }
+
+    /// <summary>Доступные книги текущего пользователя (radio-list).</summary>
+    public List<BookCardViewModel> MyAvailableBooks { get; set; } = new();
+
+    /// <summary>Выбранная для обмена книга (null = отдать безвозмездно).</summary>
+    [Display(Name = "Книга, которую ты предлагаешь")]
+    public int? SelectedOfferedBookId { get; set; }
+}
+
+public class ExchangeDetailsViewModel
+{
+    public int Id { get; set; }
+    public ExchangeStatus Status { get; set; }
+    public string StatusLabel { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+
+    public OwnerSummaryViewModel Sender { get; set; } = new();
+    public OwnerSummaryViewModel Receiver { get; set; } = new();
+
+    public BookCardViewModel? BookOffered { get; set; }
+    public BookCardViewModel BookRequested { get; set; } = new();
+
+    public List<ChatMessageViewModel> Messages { get; set; } = new();
+
+    // Какие действия доступны текущему пользователю:
+    public bool CanAccept { get; set; }
+    public bool CanReject { get; set; }
+    public bool CanCancel { get; set; }
+    public bool CanComplete { get; set; }
+    public bool CanLeaveReview { get; set; }
+
+    public string CurrentUserId { get; set; } = string.Empty;
+}
+
+public class ChatMessageViewModel
+{
+    public string SenderId { get; set; } = string.Empty;
+    public string SenderName { get; set; } = string.Empty;
+    public string? SenderAvatar { get; set; }
+    public string Text { get; set; } = string.Empty;
+    public DateTime SentAt { get; set; }
+}
+
+public class ExchangeListItemViewModel
+{
+    public int Id { get; set; }
+    public ExchangeStatus Status { get; set; }
+    public string StatusLabel { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public string OtherUserName { get; set; } = string.Empty;
+    public string OtherUserAvatar { get; set; } = string.Empty;
+    public string BookRequestedTitle { get; set; } = string.Empty;
+    public string? BookOfferedTitle { get; set; }
+    public bool IsSender { get; set; }
+}
+
+public class ReviewFormViewModel
+{
+    public int ExchangeRequestId { get; set; }
+    public string ToUserId { get; set; } = string.Empty;
+    public string ToUserName { get; set; } = string.Empty;
+
+    [Range(1, 5, ErrorMessage = "Оценка от 1 до 5")]
+    public int Rating { get; set; } = 5;
+
+    [StringLength(1000)]
+    [Display(Name = "Комментарий")]
+    public string? Comment { get; set; }
+}
