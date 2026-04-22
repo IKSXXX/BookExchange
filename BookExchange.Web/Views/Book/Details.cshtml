@@ -7,45 +7,86 @@
     var isOwner = currentId == Model.Owner.Id;
 }
 
-<div class="page-header" style="border: none; padding-bottom: 0;">
-    <a asp-controller="Book" asp-action="Index" class="page-header__back">
-        <svg class="icon"><use href="#i-arrow-left"/></svg> Каталог
+<section class="section">
+    <a asp-controller="Book" asp-action="Index" class="back-link">
+        <svg class="icon"><use href="#i-arrow-left"/></svg> Вернуться в каталог
     </a>
-</div>
 
-<section class="section" style="padding-top: var(--s-4);">
     <div class="book-details">
         <div class="book-details__cover">
-            @if (!string.IsNullOrEmpty(Model.CoverImagePath))
-            {
-                <img src="@Model.CoverImagePath" alt="@Model.Title" />
-            }
-            else
-            {
-                <div class="book-card__cover-placeholder" style="aspect-ratio:3/4;">
-                    <svg class="icon icon-xl"><use href="#i-book"/></svg>
-                </div>
-            }
+            <div class="book-cover-card">
+                @if (!string.IsNullOrEmpty(Model.CoverImagePath))
+                {
+                    <img src="@Model.CoverImagePath" alt="@Model.Title" />
+                }
+                else
+                {
+                    <div class="book-card__cover-placeholder" style="aspect-ratio:3/4;">
+                        <svg class="icon icon-xl"><use href="#i-book"/></svg>
+                    </div>
+                }
+                @if (!Model.IsAvailable)
+                {
+                    <div class="book-cover-card__unavailable">Недоступна для обмена</div>
+                }
+            </div>
         </div>
         <div class="book-details__info">
-            <span class="eyebrow">@Model.Genre</span>
-            <h1>@Model.Title</h1>
-            <p class="text-muted" style="font-family: var(--ff-display); font-size: 1.2rem; font-style: italic;">@Model.Author</p>
+            <div class="panel book-details__panel">
+                <div class="book-details__title-row">
+                    <div>
+                        <h1>@Model.Title</h1>
+                        <p class="book-details__author">@Model.Author</p>
+                    </div>
+                    <span class="genre-pill">@Model.Genre</span>
+                </div>
 
-            <div class="book-details__chips">
-                <span class="chip">Состояние: @Model.ConditionLabel</span>
-                @if (Model.Year.HasValue) { <span class="chip"><svg class="icon"><use href="#i-calendar"/></svg> @Model.Year</span> }
-                @if (!string.IsNullOrEmpty(Model.Language)) { <span class="chip">@Model.Language</span> }
-                <span class="chip @(Model.IsAvailable ? "chip--ok" : "chip--danger")">
-                    @if (Model.IsAvailable)
+                <div class="book-facts">
+                    <div class="book-fact">
+                        <div class="book-fact__icon book-fact__icon--green"><svg class="icon"><use href="#i-check"/></svg></div>
+                        <div>
+                            <div class="book-fact__label">Состояние</div>
+                            <div class="book-fact__value">@Model.ConditionLabel</div>
+                        </div>
+                    </div>
+                    @if (Model.Year.HasValue)
                     {
-                        <svg class="icon"><use href="#i-check"/></svg> <text>Доступна</text>
+                        <div class="book-fact">
+                            <div class="book-fact__icon book-fact__icon--orange"><svg class="icon"><use href="#i-bookmark"/></svg></div>
+                            <div>
+                                <div class="book-fact__label">Год издания</div>
+                                <div class="book-fact__value">@Model.Year</div>
+                            </div>
+                        </div>
                     }
-                    else
+                    @if (!string.IsNullOrEmpty(Model.Language))
                     {
-                        <svg class="icon"><use href="#i-x"/></svg> <text>Недоступна</text>
+                        <div class="book-fact">
+                            <div class="book-fact__icon book-fact__icon--lime"><svg class="icon"><use href="#i-book"/></svg></div>
+                            <div>
+                                <div class="book-fact__label">Язык</div>
+                                <div class="book-fact__value">@Model.Language</div>
+                            </div>
+                        </div>
                     }
-                </span>
+                    <div class="book-fact">
+                        <div class="book-fact__icon book-fact__icon--amber"><svg class="icon"><use href="#i-swap"/></svg></div>
+                        <div>
+                            <div class="book-fact__label">Статус</div>
+                            <div class="book-fact__value" style="color: @(Model.IsAvailable ? "var(--forest)" : "var(--terracotta)");">
+                                @(Model.IsAvailable ? "Доступна" : "Занята")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <div class="book-details__description">
+                        <h2>Описание</h2>
+                        <p>@Model.Description</p>
+                    </div>
+                }
             </div>
 
             <div class="book-details__actions">
@@ -114,25 +155,11 @@
 
     <div class="tabs" style="margin-top: var(--s-8);">
         <div class="tabs-nav">
-            <button class="tab-btn active" data-tab="description">Описание</button>
-            <button class="tab-btn" data-tab="discussions">Обсуждения (@Model.Discussions.Count)</button>
+            <button class="tab-btn active" data-tab="discussions">Обсуждения (@Model.Discussions.Count)</button>
             <button class="tab-btn" data-tab="similar">Похожие книги</button>
         </div>
 
-        <div class="tab-content" id="tab-description">
-            <div class="panel">
-                @if (!string.IsNullOrWhiteSpace(Model.Description))
-                {
-                    <p style="white-space: pre-wrap;">@Model.Description</p>
-                }
-                else
-                {
-                    <p class="text-muted">Описание пока не добавлено.</p>
-                }
-            </div>
-        </div>
-
-        <div class="tab-content" id="tab-discussions" hidden>
+        <div class="tab-content" id="tab-discussions">
             <div class="panel">
                 @if (SignInManager.IsSignedIn(User))
                 {
