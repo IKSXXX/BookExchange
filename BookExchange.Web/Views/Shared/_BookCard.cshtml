@@ -26,13 +26,13 @@
                 <svg class="icon"><use href="#i-book" /></svg>
             </div>
         }
-        @if (!string.IsNullOrWhiteSpace(Model.ConditionLabel))
-        {
-            <span class="badge @conditionClass book-card__badge">@Model.ConditionLabel</span>
-        }
         @if (!Model.IsAvailable)
         {
-            <span class="badge badge--red book-card__badge" style="left:.5rem;right:auto;">Недоступна</span>
+            <span class="badge badge--red book-card__badge">Недоступна</span>
+        }
+        else if (!string.IsNullOrWhiteSpace(Model.ConditionLabel))
+        {
+            <span class="badge @conditionClass book-card__badge">@Model.ConditionLabel</span>
         }
     </div>
     <div class="book-card__body">
