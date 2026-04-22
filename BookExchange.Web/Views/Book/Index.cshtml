@@ -104,46 +104,46 @@
                                 <partial name="_BookCard" model="b" />
                             }
                         </div>
-
-                        @if (Model.Pagination.TotalPages > 1)
-                        {
-                            <nav class="pagination">
-                                @if (Model.Pagination.HasPrev)
-                                {
-                                    <a href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = Model.Pagination.Page - 1 })">
-                                        <svg class="icon"><use href="#i-arrow-left"/></svg>
-                                    </a>
-                                }
-                                else
-                                {
-                                    <span class="is-disabled"><svg class="icon"><use href="#i-arrow-left"/></svg></span>
-                                }
-                                @for (int p = 1; p <= Model.Pagination.TotalPages; p++)
-                                {
-                                    if (p == Model.Pagination.Page)
-                                    {
-                                        <span class="is-active">@p</span>
-                                    }
-                                    else
-                                    {
-                                        <a href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = p })">@p</a>
-                                    }
-                                }
-                                @if (Model.Pagination.HasNext)
-                                {
-                                    <a href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = Model.Pagination.Page + 1 })">
-                                        <svg class="icon"><use href="#i-arrow-right"/></svg>
-                                    </a>
-                                }
-                                else
-                                {
-                                    <span class="is-disabled"><svg class="icon"><use href="#i-arrow-right"/></svg></span>
-                                }
-                            </nav>
-                        }
                     }
                 </div>
             </div>
+
+            @if (Model.Pagination.TotalPages > 1)
+            {
+                <nav class="pagination catalog-pagination">
+                    @if (Model.Pagination.HasPrev)
+                    {
+                        <a href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = Model.Pagination.Page - 1 })">
+                            <svg class="icon"><use href="#i-arrow-left"/></svg>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="is-disabled"><svg class="icon"><use href="#i-arrow-left"/></svg></span>
+                    }
+                    @for (int p = 1; p <= Model.Pagination.TotalPages; p++)
+                    {
+                        if (p == Model.Pagination.Page)
+                        {
+                            <span class="is-active">@p</span>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = p })">@p</a>
+                        }
+                    }
+                    @if (Model.Pagination.HasNext)
+                    {
+                        <a href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = Model.Pagination.Page + 1 })">
+                            <svg class="icon"><use href="#i-arrow-right"/></svg>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="is-disabled"><svg class="icon"><use href="#i-arrow-right"/></svg></span>
+                    }
+                </nav>
+            }
         </form>
     </div>
 </div>
