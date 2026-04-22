@@ -1,0 +1,27 @@
+@model ReviewFormViewModel
+@{ ViewData["Title"] = "Оставить отзыв"; }
+
+<section class="section">
+    <div class="panel" style="max-width: 600px; margin: 2rem auto;">
+        <h1>Отзыв о пользователе @Model.ToUserName</h1>
+        <form asp-action="LeaveReview" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ExchangeRequestId" />
+            <input type="hidden" asp-for="ToUserId" />
+            <input type="hidden" asp-for="ToUserName" />
+
+            <div class="form-group">
+                <label asp-for="Rating">Оценка</label>
+                <select asp-for="Rating" class="form-input">
+                    @for (int i = 5; i >= 1; i--) { <option value="@i">@(new string('★', i))@(new string('☆', 5-i)) (@i)</option> }
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Comment"></label>
+                <textarea asp-for="Comment" class="form-input" rows="4"></textarea>
+            </div>
+            <button class="btn btn-primary">Отправить</button>
+            <a asp-action="Details" asp-route-id="@Model.ExchangeRequestId" class="btn btn-exchange">Отмена</a>
+        </form>
+    </div>
+</section>

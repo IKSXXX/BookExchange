@@ -1,0 +1,22 @@
+@model AdminStatsViewModel
+@{ ViewData["Title"] = "Админка"; }
+
+<section class="section">
+    <h1>📊 Статистика</h1>
+
+    <div class="stats-grid">
+        <div class="stats-card"><span class="stats-number">@Model.UsersCount</span><span>Пользователей</span></div>
+        <div class="stats-card"><span class="stats-number">@Model.BooksCount</span><span>Книг</span></div>
+        <div class="stats-card"><span class="stats-number">@Model.ExchangesCount</span><span>Обменов всего</span></div>
+        <div class="stats-card"><span class="stats-number">@Model.CompletedExchanges</span><span>Завершённых</span></div>
+        <div class="stats-card"><span class="stats-number">@Model.PendingExchanges</span><span>Ожидающих</span></div>
+        <div class="stats-card"><span class="stats-number">@Model.ReviewsCount</span><span>Отзывов</span></div>
+    </div>
+
+    <div class="admin-links" style="margin-top: 2rem;">
+        <a asp-action="Users" class="btn btn-primary">👥 Пользователи</a>
+        <a asp-action="Books" class="btn btn-primary">📚 Книги</a>
+        <a asp-action="BookOfTheDay" class="btn btn-primary">⭐ Книга дня</a>
+        <a asp-action="Quiz" class="btn btn-primary">🎲 Вопросы игры</a>
+    </div>
+</section>

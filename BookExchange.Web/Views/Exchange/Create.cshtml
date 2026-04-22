@@ -1,0 +1,43 @@
+@model CreateExchangeViewModel
+@{ ViewData["Title"] = "Предложить обмен"; }
+
+<section class="section">
+    <h1>Предложить обмен</h1>
+
+    <div class="two-col">
+        <div class="panel">
+            <h3>Хочу получить</h3>
+            @if (Model.BookRequested != null)
+            {
+                <partial name="_BookCard" model="Model.BookRequested" />
+            }
+        </div>
+
+        <div class="panel">
+            <h3>Предлагаю отдать</h3>
+            <form asp-action="Create" asp-route-bookId="@Model.BookRequestedId" method="post">
+                @Html.AntiForgeryToken()
+
+                <label class="radio-row">
+                    <input type="radio" name="selectedOfferedBookId" value="" checked />
+                    <span>🎁 Отдать безвозмездно (ничего не предлагаю взамен)</span>
+                </label>
+
+                @foreach (var b in Model.MyAvailableBooks)
+                {
+                    <label class="radio-row">
+                        <input type="radio" name="selectedOfferedBookId" value="@b.Id" />
+                        <span>@b.Title — <em>@b.Author</em> (@b.ConditionLabel)</span>
+                    </label>
+                }
+
+                @if (Model.MyAvailableBooks.Count == 0)
+                {
+                    <p class="text-muted">У тебя нет доступных книг. <a asp-controller="Book" asp-action="Create">Добавь</a> книгу, чтобы предложить обмен, или отправь запрос безвозмездно.</p>
+                }
+
+                <button class="btn btn-primary" style="margin-top: 1rem;">Отправить заявку</button>
+            </form>
+        </div>
+    </div>
+</section>

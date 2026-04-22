@@ -1,0 +1,39 @@
+@*
+    Карточка книги для каталога / подборок.
+    Используется через <partial name="_BookCard" model="..." />.
+*@
+@model BookCardViewModel
+
+<a class="book-card-link" asp-controller="Book" asp-action="Details" asp-route-id="@Model.Id">
+    <div class="book-card @(Model.IsAvailable ? "" : "book-card--unavailable")">
+        <div class="book-card__cover">
+            @if (!string.IsNullOrWhiteSpace(Model.CoverImagePath))
+            {
+                <img src="@Model.CoverImagePath" alt="@Model.Title" />
+            }
+            else
+            {
+                <div class="book-card__cover-placeholder">📖</div>
+            }
+            @if (!Model.IsAvailable)
+            {
+                <span class="book-card__badge">Недоступна</span>
+            }
+        </div>
+        <div class="book-card__body">
+            <h3 class="book-card__title">@Model.Title</h3>
+            <p class="book-card__author">@Model.Author</p>
+            <div class="book-card__meta">
+                <span class="book-card__genre">@Model.Genre</span>
+                <span class="book-card__condition">@Model.ConditionLabel</span>
+            </div>
+            <div class="book-card__owner">
+                @if (!string.IsNullOrEmpty(Model.Owner.Avatar))
+                {
+                    <img src="@Model.Owner.Avatar" alt="@Model.Owner.Name" class="book-card__avatar" />
+                }
+                <span>@Model.Owner.Name</span>
+            </div>
+        </div>
+    </div>
+</a>

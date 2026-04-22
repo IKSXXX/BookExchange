@@ -1,0 +1,41 @@
+@model EditProfileViewModel
+@{ ViewData["Title"] = "Редактирование профиля"; }
+
+<section class="section">
+    <div class="panel" style="max-width: 600px; margin: 2rem auto;">
+        <h1>Редактировать профиль</h1>
+        <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="UserName"></label>
+                <input asp-for="UserName" class="form-input" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Location"></label>
+                <input asp-for="Location" class="form-input" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Avatar"></label>
+                <input asp-for="Avatar" type="file" accept="image/*" class="form-input" />
+                @if (!string.IsNullOrEmpty(Model.ExistingAvatarPath))
+                {
+                    <img src="@Model.ExistingAvatarPath" class="avatar" style="margin-top:.5rem;" />
+                }
+            </div>
+            <hr />
+            <h3>Смена пароля (необязательно)</h3>
+            <div class="form-group">
+                <label asp-for="CurrentPassword"></label>
+                <input asp-for="CurrentPassword" type="password" class="form-input" />
+            </div>
+            <div class="form-group">
+                <label asp-for="NewPassword"></label>
+                <input asp-for="NewPassword" type="password" class="form-input" />
+            </div>
+            <button class="btn btn-primary">Сохранить</button>
+            <a asp-action="Profile" class="btn btn-exchange">Отмена</a>
+        </form>
+    </div>
+</section>
