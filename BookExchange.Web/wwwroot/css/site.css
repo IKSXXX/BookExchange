@@ -663,18 +663,9 @@ input[type="radio"] {
     flex-direction: column;
     gap: 1.25rem;
 }
-.catalog-side .filters-card {
-    position: sticky;
-    top: 88px;
-}
-.catalog-side .ai-helper {
-    margin-top: auto;
-    position: sticky;
-    bottom: 1rem;
-}
+.catalog-side .ai-helper { margin-top: auto; }
 @media (max-width: 1024px) {
-    .catalog-side .filters-card,
-    .catalog-side .ai-helper { position: static; margin-top: 0; }
+    .catalog-side .ai-helper { margin-top: 0; }
 }
 .catalog-pagination { margin-top: 2rem; }
 

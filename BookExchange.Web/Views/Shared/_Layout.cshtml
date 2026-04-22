@@ -95,10 +95,6 @@
                 }
 
                 <div class="nav-cta">
-                    <a asp-controller="Book" asp-action="Index" class="btn btn-outline btn-sm">
-                        <svg class="icon"><use href="#i-home"/></svg>
-                        Найти книгу
-                    </a>
                     @if (SignInManager.IsSignedIn(User))
                     {
                         <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser!.Id" class="btn btn-primary btn-sm">
