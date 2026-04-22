@@ -46,9 +46,13 @@ public static class DbSeeder
                 AvatarPath = "https://randomuser.me/api/portraits/men/0.jpg"
             };
             await userManager.CreateAsync(admin, AdminPassword);
-            await userManager.AddToRoleAsync(admin, AdminRole);
-            await userManager.AddToRoleAsync(admin, UserRole);
         }
+        // Всегда проверяем роли: если по какой-то причине Admin-роль слетела —
+        // восстанавливаем, чтобы админ-панель не пропадала после изменения схемы/ручных правок.
+        if (!await userManager.IsInRoleAsync(admin, AdminRole))
+            await userManager.AddToRoleAsync(admin, AdminRole);
+        if (!await userManager.IsInRoleAsync(admin, UserRole))
+            await userManager.AddToRoleAsync(admin, UserRole);
 
         // 3. Тестовые пользователи (если их ещё нет)
         var demoUsers = new (string userName, string email, string location, string avatar)[]
