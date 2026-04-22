@@ -1,80 +1,100 @@
 @model AdminStatsViewModel
 @{ ViewData["Title"] = "Админка"; }
 
-<section class="section">
-    <div class="page-header">
-        <div>
-            <span class="eyebrow">Администрирование</span>
-            <h1>Панель управления</h1>
+<div class="section--gray" style="padding:2rem 0; min-height:calc(100vh - 64px);">
+    <div class="container">
+        <div class="mb-6">
+            <h1 class="mb-2">Панель управления</h1>
+            <p class="text-muted">Администрирование BookSwap</p>
         </div>
-    </div>
 
-    <div class="stats-grid">
-        <div class="stats-card">
-            <svg class="icon icon-lg stats-card__icon" style="color: var(--forest);"><use href="#i-users"/></svg>
-            <span class="stats-number">@Model.UsersCount</span>
-            <span class="stats-label">Пользователей</span>
+        <div class="profile-stats-grid mb-6" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="stat-card__icon stat-card__icon--blue"><svg class="icon"><use href="#i-users"/></svg></div>
+                    <div class="stat-card__value">@Model.UsersCount</div>
+                    <div class="stat-card__label">Пользователей</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="stat-card__icon stat-card__icon--green"><svg class="icon"><use href="#i-book"/></svg></div>
+                    <div class="stat-card__value">@Model.BooksCount</div>
+                    <div class="stat-card__label">Книг</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="stat-card__icon stat-card__icon--yellow"><svg class="icon"><use href="#i-swap"/></svg></div>
+                    <div class="stat-card__value">@Model.ExchangesCount</div>
+                    <div class="stat-card__label">Обменов</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="stat-card__icon stat-card__icon--green"><svg class="icon"><use href="#i-check"/></svg></div>
+                    <div class="stat-card__value">@Model.CompletedExchanges</div>
+                    <div class="stat-card__label">Завершённых</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="stat-card__icon stat-card__icon--yellow"><svg class="icon"><use href="#i-chart"/></svg></div>
+                    <div class="stat-card__value">@Model.PendingExchanges</div>
+                    <div class="stat-card__label">В ожидании</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="stat-card__icon stat-card__icon--blue"><svg class="icon"><use href="#i-star"/></svg></div>
+                    <div class="stat-card__value">@Model.ReviewsCount</div>
+                    <div class="stat-card__label">Отзывов</div>
+                </div>
+            </div>
         </div>
-        <div class="stats-card">
-            <svg class="icon icon-lg stats-card__icon" style="color: var(--terracotta);"><use href="#i-book"/></svg>
-            <span class="stats-number">@Model.BooksCount</span>
-            <span class="stats-label">Книг в каталоге</span>
-        </div>
-        <div class="stats-card">
-            <svg class="icon icon-lg stats-card__icon" style="color: var(--mustard);"><use href="#i-swap"/></svg>
-            <span class="stats-number">@Model.ExchangesCount</span>
-            <span class="stats-label">Обменов всего</span>
-        </div>
-        <div class="stats-card">
-            <svg class="icon icon-lg stats-card__icon" style="color: var(--forest);"><use href="#i-check"/></svg>
-            <span class="stats-number">@Model.CompletedExchanges</span>
-            <span class="stats-label">Завершённых</span>
-        </div>
-        <div class="stats-card">
-            <svg class="icon icon-lg stats-card__icon" style="color: var(--mustard);"><use href="#i-chart"/></svg>
-            <span class="stats-number">@Model.PendingExchanges</span>
-            <span class="stats-label">В ожидании</span>
-        </div>
-        <div class="stats-card">
-            <svg class="icon icon-lg stats-card__icon" style="color: var(--terracotta);"><use href="#i-star"/></svg>
-            <span class="stats-number">@Model.ReviewsCount</span>
-            <span class="stats-label">Отзывов</span>
-        </div>
-    </div>
 
-    <h2 style="margin-top: var(--s-8);">Быстрые действия</h2>
-    <div class="admin-links">
-        <a asp-action="Users" class="admin-link-card">
-            <svg class="icon icon-lg" style="color: var(--forest);"><use href="#i-users"/></svg>
-            <div>
-                <strong>Пользователи</strong>
-                <p class="text-muted text-sm">Блокировка, права, модерация</p>
-            </div>
-            <svg class="icon admin-link-card__arrow"><use href="#i-arrow-right"/></svg>
-        </a>
-        <a asp-action="Books" class="admin-link-card">
-            <svg class="icon icon-lg" style="color: var(--terracotta);"><use href="#i-book"/></svg>
-            <div>
-                <strong>Книги</strong>
-                <p class="text-muted text-sm">Скрытие, удаление</p>
-            </div>
-            <svg class="icon admin-link-card__arrow"><use href="#i-arrow-right"/></svg>
-        </a>
-        <a asp-action="BookOfTheDay" class="admin-link-card">
-            <svg class="icon icon-lg" style="color: var(--mustard);"><use href="#i-sparkles"/></svg>
-            <div>
-                <strong>Книга дня</strong>
-                <p class="text-muted text-sm">Подборка на главную</p>
-            </div>
-            <svg class="icon admin-link-card__arrow"><use href="#i-arrow-right"/></svg>
-        </a>
-        <a asp-action="Quiz" class="admin-link-card">
-            <svg class="icon icon-lg" style="color: var(--forest);"><use href="#i-chat"/></svg>
-            <div>
-                <strong>Викторина</strong>
-                <p class="text-muted text-sm">Вопросы и ответы</p>
-            </div>
-            <svg class="icon admin-link-card__arrow"><use href="#i-arrow-right"/></svg>
-        </a>
+        <h2 class="mb-4">Быстрые действия</h2>
+        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;">
+            <a asp-action="Users" class="admin-link-card">
+                <div class="admin-link-card__icon" style="background:var(--blue-50);color:var(--blue-600);">
+                    <svg class="icon"><use href="#i-users"/></svg>
+                </div>
+                <div class="grow">
+                    <strong>Пользователи</strong>
+                    <p class="text-muted text-sm">Блокировка, права, модерация</p>
+                </div>
+                <svg class="icon text-muted"><use href="#i-arrow-right"/></svg>
+            </a>
+            <a asp-action="Books" class="admin-link-card">
+                <div class="admin-link-card__icon" style="background:var(--green-50);color:var(--green-600);">
+                    <svg class="icon"><use href="#i-book"/></svg>
+                </div>
+                <div class="grow">
+                    <strong>Книги</strong>
+                    <p class="text-muted text-sm">Скрытие, удаление</p>
+                </div>
+                <svg class="icon text-muted"><use href="#i-arrow-right"/></svg>
+            </a>
+            <a asp-action="BookOfTheDay" class="admin-link-card">
+                <div class="admin-link-card__icon" style="background:var(--yellow-50);color:var(--yellow-600);">
+                    <svg class="icon"><use href="#i-sparkles"/></svg>
+                </div>
+                <div class="grow">
+                    <strong>Книга дня</strong>
+                    <p class="text-muted text-sm">Подборка на главную</p>
+                </div>
+                <svg class="icon text-muted"><use href="#i-arrow-right"/></svg>
+            </a>
+            <a asp-action="Quiz" class="admin-link-card">
+                <div class="admin-link-card__icon" style="background:var(--purple-50,#F5F3FF);color:var(--purple-600,#7C3AED);">
+                    <svg class="icon"><use href="#i-chat"/></svg>
+                </div>
+                <div class="grow">
+                    <strong>Викторина</strong>
+                    <p class="text-muted text-sm">Вопросы и ответы</p>
+                </div>
+                <svg class="icon text-muted"><use href="#i-arrow-right"/></svg>
+            </a>
+        </div>
     </div>
-</section>
+</div>

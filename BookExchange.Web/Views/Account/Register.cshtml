@@ -1,57 +1,51 @@
 @model RegisterViewModel
-@{ ViewData["Title"] = "Регистрация"; }
+@{
+    ViewData["Title"] = "Регистрация";
+    Layout = "_Layout";
+}
 
-<section class="auth-wrap">
-    <aside class="auth-art">
-        <div class="auth-art__content">
-            <div class="auth-art__mark">
-                <svg class="icon icon-xl"><use href="#i-sparkles"/></svg>
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="text-center mb-4">
+            <div class="auth-logo">
+                <svg class="icon"><use href="#i-book"/></svg>
             </div>
-            <h2>Добавь первую страницу</h2>
-            <p>Создай аккаунт, собери свою полку, делись книгами и находи единомышленников.</p>
+            <h1>Создать аккаунт</h1>
+            <p class="auth-card__sub">Присоединяйтесь к сообществу читателей</p>
         </div>
-        <div class="auth-art__glow"></div>
-    </aside>
 
-    <div class="auth-form">
-        <div class="auth-form__inner">
-            <span class="eyebrow">Новый читатель</span>
-            <h1>Регистрация</h1>
-            <p class="text-muted mb-4">Присоединяйся к сообществу BookSwap.</p>
+        <form asp-action="Register" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger text-sm"></div>
 
-            <form asp-action="Register" method="post">
-                @Html.AntiForgeryToken()
-                <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="UserName" class="form-label">Имя пользователя</label>
+                <input asp-for="UserName" autocomplete="username" class="form-input" />
+                <span asp-validation-for="UserName" class="text-danger text-sm"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" type="email" autocomplete="email" class="form-input" placeholder="you@example.com" />
+                <span asp-validation-for="Email" class="text-danger text-sm"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="form-label">Пароль</label>
+                <input asp-for="Password" type="password" autocomplete="new-password" class="form-input" />
+                <span asp-validation-for="Password" class="text-danger text-sm"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmPassword" class="form-label">Подтверждение пароля</label>
+                <input asp-for="ConfirmPassword" type="password" autocomplete="new-password" class="form-input" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger text-sm"></span>
+            </div>
 
-                <div class="form-group">
-                    <label asp-for="UserName">Имя пользователя</label>
-                    <input asp-for="UserName" autocomplete="username" />
-                    <span asp-validation-for="UserName" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Email">Email</label>
-                    <input asp-for="Email" type="email" autocomplete="email" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Password">Пароль</label>
-                    <input asp-for="Password" type="password" autocomplete="new-password" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ConfirmPassword">Подтверждение пароля</label>
-                    <input asp-for="ConfirmPassword" type="password" autocomplete="new-password" />
-                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                </div>
+            <button type="submit" class="btn btn-primary btn-lg w-full mt-2">
+                Создать аккаунт
+            </button>
+        </form>
 
-                <button class="btn btn-primary btn-lg w-full mt-3">
-                    <svg class="icon"><use href="#i-sparkles"/></svg> Создать аккаунт
-                </button>
-            </form>
-
-            <p class="text-center text-muted mt-4">
-                Уже есть аккаунт? <a asp-action="Login">Войти</a>
-            </p>
+        <div class="auth-card__footer">
+            Уже есть аккаунт? <a asp-action="Login">Войти</a>
         </div>
     </div>
-</section>
+</div>

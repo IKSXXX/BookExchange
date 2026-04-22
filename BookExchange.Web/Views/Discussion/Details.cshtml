@@ -2,68 +2,79 @@
 @inject SignInManager<User> SignInManager
 @{ ViewData["Title"] = Model.Title; }
 
-<section class="section">
-    <div class="page-header">
-        <div>
-            <a asp-controller="Book" asp-action="Details" asp-route-id="@Model.BookId" class="page-header__back">
-                <svg class="icon"><use href="#i-arrow-left"/></svg> К книге «@Model.BookTitle»
-            </a>
-            <span class="eyebrow">Обсуждение</span>
-            <h1>@Model.Title</h1>
-            <p class="text-muted text-sm">Автор темы: @Model.AuthorName</p>
-        </div>
-    </div>
+<div class="section--gray" style="padding:2rem 0; min-height:calc(100vh - 64px);">
+    <div class="container">
+        <a asp-controller="Book" asp-action="Details" asp-route-id="@Model.BookId" class="btn btn-ghost btn-sm mb-6">
+            <svg class="icon"><use href="#i-arrow-left"/></svg>
+            К книге «@Model.BookTitle»
+        </a>
 
-    <div class="panel chat-panel" style="min-height: 560px; max-height: 720px;">
-        <div id="discMessages" class="chat-messages" data-discussion-id="@Model.Id">
-            @if (Model.Messages.Count == 0)
+        <div class="card mb-4">
+            <div class="card-body">
+                <h1 class="mb-1">@Model.Title</h1>
+                <p class="text-muted text-sm">Автор темы: @Model.AuthorName</p>
+            </div>
+        </div>
+
+        <div class="chat-card">
+            <div class="chat-card__head">
+                <h3>
+                    <svg class="icon text-primary"><use href="#i-message-circle"/></svg>
+                    Обсуждение
+                </h3>
+            </div>
+            <div id="discMessages" class="chat-messages discussion-messages" data-discussion-id="@Model.Id">
+                @if (Model.Messages.Count == 0)
+                {
+                    <div class="chat-empty">
+                        <svg class="icon"><use href="#i-chat"/></svg>
+                        <p>Пока тихо. Напишите первое сообщение!</p>
+                    </div>
+                }
+                else
+                {
+                    foreach (var m in Model.Messages)
+                    {
+                        <div class="disc-message">
+                            @if (!string.IsNullOrEmpty(m.AvatarPath))
+                            {
+                                <img src="@m.AvatarPath" alt="" class="disc-message__avatar" />
+                            }
+                            else
+                            {
+                                <span class="disc-message__avatar">@(m.UserName.Substring(0, 1).ToUpper())</span>
+                            }
+                            <div class="disc-message__body">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <strong>@m.UserName</strong>
+                                    <span class="text-xs text-muted">@m.CreatedAt.ToLocalTime().ToString("HH:mm · dd.MM")</span>
+                                </div>
+                                <div class="disc-message__text">@m.Text</div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+
+            @if (SignInManager.IsSignedIn(User))
             {
-                <div class="empty" style="border:none;background:transparent;margin:auto;">
-                    <svg class="icon icon-xl"><use href="#i-chat"/></svg>
-                    <p class="text-muted">Пока тихо. Напиши первое сообщение!</p>
-                </div>
+                <form id="discForm" class="chat-compose">
+                    <input type="text" id="discInput" placeholder="Напишите ответ..." maxlength="1000" autocomplete="off" />
+                    <button type="submit" class="btn btn-primary">
+                        <svg class="icon"><use href="#i-send"/></svg>
+                    </button>
+                </form>
             }
             else
             {
-                foreach (var m in Model.Messages)
-                {
-                    <div class="chat-message">
-                        @if (!string.IsNullOrEmpty(m.AvatarPath))
-                        {
-                            <img src="@m.AvatarPath" class="avatar avatar-sm" alt="" />
-                        }
-                        else
-                        {
-                            <span class="avatar avatar-sm" style="display:grid;place-items:center;background:var(--forest-soft);color:var(--forest);font-weight:700;font-size:.8rem;">@(m.UserName.Substring(0, 1).ToUpper())</span>
-                        }
-                        <div>
-                            <strong>@m.UserName</strong>
-                            <div class="chat-text">@m.Text</div>
-                            <small>@m.CreatedAt.ToLocalTime().ToString("HH:mm · dd.MM")</small>
-                        </div>
-                    </div>
-                }
+                <div class="chat-compose" style="justify-content:center;color:var(--gray-600);font-size:.875rem;">
+                    <svg class="icon"><use href="#i-login"/></svg>
+                    <span>Чтобы писать, <a asp-controller="Account" asp-action="Login" style="color:var(--blue-600);font-weight:500;">войдите в аккаунт</a></span>
+                </div>
             }
         </div>
-
-        @if (SignInManager.IsSignedIn(User))
-        {
-            <form id="discForm" class="chat-form">
-                <input type="text" id="discInput" placeholder="Напиши ответ..." maxlength="1000" autocomplete="off" />
-                <button type="submit" class="btn btn-primary btn-icon" aria-label="Отправить">
-                    <svg class="icon"><use href="#i-arrow-right"/></svg>
-                </button>
-            </form>
-        }
-        else
-        {
-            <div class="alert alert--info">
-                <svg class="icon"><use href="#i-login"/></svg>
-                <span>Чтобы писать в тему, <a asp-controller="Account" asp-action="Login">войди в аккаунт</a>.</span>
-            </div>
-        }
     </div>
-</section>
+</div>
 
 @section Scripts {
     <script>
@@ -74,17 +85,19 @@
 
             const conn = new signalR.HubConnectionBuilder().withUrl('/hubs/discussion').withAutomaticReconnect().build();
             conn.on('ReceiveMessage', m => {
-                const empty = box.querySelector('.empty');
+                const empty = box.querySelector('.chat-empty');
                 if (empty) empty.remove();
                 const el = document.createElement('div');
-                el.className = 'chat-message';
+                el.className = 'disc-message';
+                const initial = m.userName.charAt(0).toUpperCase();
                 const avatar = m.avatarPath
-                    ? `<img src="${m.avatarPath}" class="avatar avatar-sm" alt=""/>`
-                    : `<span class="avatar avatar-sm" style="display:grid;place-items:center;background:var(--forest-soft);color:var(--forest);font-weight:700;font-size:.8rem;">${m.userName.charAt(0).toUpperCase()}</span>`;
+                    ? `<img src="${m.avatarPath}" class="disc-message__avatar" alt=""/>`
+                    : `<span class="disc-message__avatar">${initial}</span>`;
                 const d = new Date(m.createdAt);
                 const time = d.toTimeString().slice(0,5) + ' · ' + d.toLocaleDateString();
-                el.innerHTML = `${avatar}<div><strong>${m.userName}</strong><div class="chat-text"></div><small>${time}</small></div>`;
-                el.querySelector('.chat-text').textContent = m.text;
+                el.innerHTML = `${avatar}<div class="disc-message__body"><div class="flex items-center gap-2 mb-1"><strong></strong><span class="text-xs text-muted">${time}</span></div><div class="disc-message__text"></div></div>`;
+                el.querySelector('strong').textContent = m.userName;
+                el.querySelector('.disc-message__text').textContent = m.text;
                 box.appendChild(el); box.scrollTop = box.scrollHeight;
             });
             try { await conn.start(); await conn.invoke('JoinDiscussion', discId); } catch (e) { console.error(e); }

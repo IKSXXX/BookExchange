@@ -1,57 +1,72 @@
 @model EditProfileViewModel
 @{ ViewData["Title"] = "Редактирование профиля"; }
 
-<section class="section">
-    <div class="panel" style="max-width: 820px; margin: 0 auto;">
-        <div class="page-header" style="border: none; padding-bottom: 0;">
-            <div>
-                <span class="eyebrow">Настройки</span>
-                <h1>Профиль</h1>
-            </div>
-        </div>
+<div class="section--gray" style="padding:2rem 0; min-height:calc(100vh - 64px);">
+    <div class="container">
+        <a asp-action="Profile" class="btn btn-ghost btn-sm mb-6">
+            <svg class="icon"><use href="#i-arrow-left"/></svg>
+            К профилю
+        </a>
 
-        <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-wrap">
+            <div class="mb-6">
+                <h1 class="mb-2">Настройки профиля</h1>
+                <p class="text-muted">Обновите имя, город или аватар.</p>
+            </div>
 
-            <div class="form-group">
-                <label asp-for="UserName">Имя пользователя</label>
-                <input asp-for="UserName" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Location">Город</label>
-                <input asp-for="Location" placeholder="Москва, Санкт-Петербург..." />
-            </div>
-            <div class="form-group">
-                <label asp-for="Avatar">Аватар</label>
-                <input asp-for="Avatar" type="file" accept="image/*" />
-                @if (!string.IsNullOrEmpty(Model.ExistingAvatarPath))
-                {
-                    <div class="flex items-center gap-2 mt-2">
-                        <img src="@Model.ExistingAvatarPath" alt="" class="avatar avatar-lg" />
-                        <span class="text-muted text-sm">Текущий аватар</span>
+            <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="All" class="text-danger text-sm mb-2"></div>
+
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">Профиль</h3></div>
+                    <div class="card-body stack">
+                        <div class="form-group">
+                            <label asp-for="UserName" class="form-label">Имя пользователя</label>
+                            <input asp-for="UserName" class="form-input" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Location" class="form-label">Город</label>
+                            <input asp-for="Location" class="form-input" placeholder="Москва, Санкт-Петербург..." />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Avatar" class="form-label">Аватар</label>
+                            <input asp-for="Avatar" type="file" accept="image/*" class="form-input" />
+                            @if (!string.IsNullOrEmpty(Model.ExistingAvatarPath))
+                            {
+                                <div class="flex items-center gap-2 mt-3">
+                                    <img src="@Model.ExistingAvatarPath" alt="" class="profile-avatar" style="width:56px;height:56px;" />
+                                    <span class="text-muted text-sm">Текущий аватар</span>
+                                </div>
+                            }
+                        </div>
                     </div>
-                }
-            </div>
+                </div>
 
-            <div class="divider"></div>
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Смена пароля <span class="text-muted text-xs">(необязательно)</span></h3>
+                    </div>
+                    <div class="card-body stack">
+                        <div class="form-group">
+                            <label asp-for="CurrentPassword" class="form-label">Текущий пароль</label>
+                            <input asp-for="CurrentPassword" type="password" autocomplete="current-password" class="form-input" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewPassword" class="form-label">Новый пароль</label>
+                            <input asp-for="NewPassword" type="password" autocomplete="new-password" class="form-input" />
+                        </div>
+                    </div>
+                </div>
 
-            <h3 style="font-family:var(--ff-sans);font-size:1rem;font-weight:700;margin-bottom:var(--s-3);">Смена пароля <small class="text-muted" style="font-weight:400;">(необязательно)</small></h3>
-            <div class="form-group">
-                <label asp-for="CurrentPassword">Текущий пароль</label>
-                <input asp-for="CurrentPassword" type="password" autocomplete="current-password" />
-            </div>
-            <div class="form-group">
-                <label asp-for="NewPassword">Новый пароль</label>
-                <input asp-for="NewPassword" type="password" autocomplete="new-password" />
-            </div>
-
-            <div class="flex gap-2 mt-4">
-                <button class="btn btn-primary btn-lg">
-                    <svg class="icon"><use href="#i-check"/></svg> Сохранить
-                </button>
-                <a asp-action="Profile" class="btn btn-ghost btn-lg">Отмена</a>
-            </div>
-        </form>
+                <div class="flex gap-2 mt-6">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <svg class="icon"><use href="#i-check"/></svg>
+                        Сохранить
+                    </button>
+                    <a asp-action="Profile" class="btn btn-outline btn-lg">Отмена</a>
+                </div>
+            </form>
+        </div>
     </div>
-</section>
+</div>

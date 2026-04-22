@@ -4,57 +4,49 @@
     Layout = "_Layout";
 }
 
-<section class="auth-wrap">
-    <aside class="auth-art">
-        <div class="auth-art__content">
-            <div class="auth-art__mark">
-                <svg class="icon icon-xl"><use href="#i-book"/></svg>
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="text-center mb-4">
+            <div class="auth-logo">
+                <svg class="icon"><use href="#i-book"/></svg>
             </div>
-            <h2>С возвращением в&nbsp;библиотеку</h2>
-            <p>Каждая книга ищет нового читателя. Войди, чтобы продолжить обмены и открыть новые истории.</p>
+            <h1>С возвращением</h1>
+            <p class="auth-card__sub">Войдите, чтобы продолжить обмены</p>
         </div>
-        <div class="auth-art__glow"></div>
-    </aside>
 
-    <div class="auth-form">
-        <div class="auth-form__inner">
-            <span class="eyebrow">Аккаунт</span>
-            <h1>Вход</h1>
-            <p class="text-muted mb-4">Рады снова видеть тебя на BookSwap.</p>
+        <form asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div asp-validation-summary="All" class="text-danger text-sm"></div>
 
-            <form asp-action="Login" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="ReturnUrl" />
-                <div asp-validation-summary="All" class="text-danger"></div>
-
-                <div class="form-group">
-                    <label asp-for="Email">Email</label>
-                    <input asp-for="Email" type="email" autocomplete="email" placeholder="you@example.com" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Password">Пароль</label>
-                    <input asp-for="Password" type="password" autocomplete="current-password" placeholder="••••••••" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-                <label class="checkbox-label">
-                    <input asp-for="RememberMe" type="checkbox" /> <span>@Html.DisplayNameFor(m => m.RememberMe)</span>
-                </label>
-
-                <button class="btn btn-primary btn-lg w-full mt-3">
-                    <svg class="icon"><use href="#i-login"/></svg> Войти
-                </button>
-            </form>
-
-            <p class="text-center text-muted mt-4">
-                Нет аккаунта? <a asp-action="Register">Зарегистрироваться</a>
-            </p>
-
-            <div class="auth-form__tip">
-                <strong>Тестовые аккаунты</strong>
-                <div><code>admin@bookswap.com</code> / <code>Admin123!</code></div>
-                <div><code>anna@bookswap.com</code> / <code>Pass123!</code></div>
+            <div class="form-group">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" type="email" autocomplete="email" class="form-input" placeholder="you@example.com" />
+                <span asp-validation-for="Email" class="text-danger text-sm"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="Password" class="form-label">Пароль</label>
+                <input asp-for="Password" type="password" autocomplete="current-password" class="form-input" placeholder="••••••••" />
+                <span asp-validation-for="Password" class="text-danger text-sm"></span>
+            </div>
+            <label class="checkbox-row">
+                <input asp-for="RememberMe" type="checkbox" />
+                <span>Запомнить меня</span>
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-lg w-full mt-2">
+                Войти
+            </button>
+        </form>
+
+        <div class="auth-card__footer">
+            Нет аккаунта? <a asp-action="Register">Зарегистрироваться</a>
+        </div>
+
+        <div class="auth-tip">
+            <strong>Тестовые аккаунты</strong>
+            <div><code>admin@bookswap.com</code> / <code>Admin123!</code></div>
+            <div><code>anna@bookswap.com</code> / <code>Pass123!</code></div>
         </div>
     </div>
-</section>
+</div>

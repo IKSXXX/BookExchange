@@ -1,75 +1,77 @@
 @model List<Book>
 @{ ViewData["Title"] = "Модерация книг"; }
 
-<section class="section">
-    <div class="page-header">
-        <div>
-            <a asp-action="Index" class="page-header__back">
-                <svg class="icon"><use href="#i-arrow-left"/></svg> Админка
-            </a>
-            <span class="eyebrow">Модерация</span>
-            <h1>Книги</h1>
-        </div>
-        <span class="text-muted text-sm">Всего: <strong>@Model.Count</strong></span>
-    </div>
+<div class="section--gray" style="padding:2rem 0; min-height:calc(100vh - 64px);">
+    <div class="container">
+        <a asp-action="Index" class="btn btn-ghost btn-sm mb-4">
+            <svg class="icon"><use href="#i-arrow-left"/></svg>
+            В админку
+        </a>
 
-    <div class="panel panel--flush">
-        <div class="table-wrap">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Название</th>
-                        <th>Автор</th>
-                        <th>Владелец</th>
-                        <th>Жанр</th>
-                        <th>Статус</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var b in Model)
-                    {
-                        <tr class="@(b.IsHidden ? "row-hidden" : "")">
-                            <td><a asp-controller="Book" asp-action="Details" asp-route-id="@b.Id" style="font-weight:600;color:var(--ink);">@b.Title</a></td>
-                            <td class="text-muted">@b.Author</td>
-                            <td class="text-muted">@(b.Owner?.UserName ?? "—")</td>
-                            <td><span class="chip">@b.Genre</span></td>
-                            <td>
-                                @if (b.IsHidden)
-                                {
-                                    <span class="chip chip--danger">Скрыта</span>
-                                }
-                                else if (b.IsAvailable)
-                                {
-                                    <span class="chip chip--ok">Доступна</span>
-                                }
-                                else
-                                {
-                                    <span class="chip">Занята</span>
-                                }
-                            </td>
-                            <td>
-                                <div class="flex gap-1 wrap">
-                                    <form asp-action="ToggleBookHidden" method="post" class="inline-form">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@b.Id" />
-                                        <button class="btn btn-outline btn-sm">
-                                            @(b.IsHidden ? "Показать" : "Скрыть")
-                                        </button>
-                                    </form>
-                                    <form asp-action="DeleteBook" method="post" class="inline-form" onsubmit="return confirm('Удалить навсегда?');">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@b.Id" />
-                                        <button class="btn btn-danger btn-sm">
-                                            <svg class="icon"><use href="#i-trash"/></svg> Удалить
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+        <div class="flex items-center justify-between mb-6" style="flex-wrap:wrap;gap:1rem;">
+            <div>
+                <h1 class="mb-1">Книги</h1>
+                <p class="text-muted text-sm">Всего: <strong>@Model.Count</strong></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-wrap" style="border:none;border-radius:0;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Автор</th>
+                            <th>Владелец</th>
+                            <th>Жанр</th>
+                            <th>Статус</th>
+                            <th style="text-align:right;">Действия</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var b in Model)
+                        {
+                            <tr class="@(b.IsHidden ? "row-hidden" : "")">
+                                <td><a asp-controller="Book" asp-action="Details" asp-route-id="@b.Id" style="font-weight:600;color:var(--gray-900);">@b.Title</a></td>
+                                <td class="text-muted">@b.Author</td>
+                                <td class="text-muted">@(b.Owner?.UserName ?? "—")</td>
+                                <td><span class="badge badge--secondary">@b.Genre</span></td>
+                                <td>
+                                    @if (b.IsHidden)
+                                    {
+                                        <span class="badge badge--red">Скрыта</span>
+                                    }
+                                    else if (b.IsAvailable)
+                                    {
+                                        <span class="badge badge--green">Доступна</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge--secondary">Занята</span>
+                                    }
+                                </td>
+                                <td style="text-align:right;">
+                                    <div class="flex gap-1 justify-end" style="flex-wrap:wrap;">
+                                        <form asp-action="ToggleBookHidden" method="post" style="margin:0;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@b.Id" />
+                                            <button class="btn btn-outline btn-sm">@(b.IsHidden ? "Показать" : "Скрыть")</button>
+                                        </form>
+                                        <form asp-action="DeleteBook" method="post" style="margin:0;" onsubmit="return confirm('Удалить навсегда?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@b.Id" />
+                                            <button class="btn btn-danger btn-sm">
+                                                <svg class="icon"><use href="#i-trash"/></svg>
+                                                Удалить
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</section>
+</div>
