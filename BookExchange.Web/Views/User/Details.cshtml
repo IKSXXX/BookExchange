@@ -1,81 +1,110 @@
 @model UserProfileViewModel
 @{ ViewData["Title"] = Model.UserName; }
 
-<section class="profile-hero">
-    <div class="profile-hero__inner">
-        <div class="profile-hero__avatar-wrap">
-            @if (!string.IsNullOrEmpty(Model.AvatarPath))
-            {
-                <img src="@Model.AvatarPath" class="profile-hero__avatar" alt="@Model.UserName" />
-            }
-            else
-            {
-                <span class="profile-hero__avatar profile-hero__avatar--initial">
-                    @(Model.UserName.Substring(0, 1).ToUpper())
-                </span>
-            }
-            @if (Model.IsCurrentUser)
-            {
-                <a asp-controller="Account" asp-action="EditProfile" class="profile-hero__edit" aria-label="Редактировать">
-                    <svg class="icon"><use href="#i-edit"/></svg>
-                </a>
-            }
-        </div>
-
-        <div class="profile-hero__body">
-            <div class="profile-hero__top">
-                <div>
-                    <h1>@Model.UserName</h1>
-                    @if (!string.IsNullOrEmpty(Model.Location))
+<div class="section--gray" style="padding:2rem 0; min-height:calc(100vh - 64px);">
+    <div class="container">
+        @* Profile header *@
+        <div class="card mb-6">
+            <div class="card-body profile-head-card">
+                <div class="profile-head-avatar-wrap">
+                    @if (!string.IsNullOrEmpty(Model.AvatarPath))
                     {
-                        <p class="profile-hero__city"><svg class="icon"><use href="#i-location"/></svg> @Model.Location</p>
+                        <img src="@Model.AvatarPath" alt="@Model.UserName" class="profile-avatar" />
                     }
-                    <p class="profile-hero__since">Участник с @Model.RegistrationDate.ToLocalTime().ToString("MMMM yyyy")</p>
+                    else
+                    {
+                        <span class="profile-avatar profile-avatar--initial">@(Model.UserName.Substring(0, 1).ToUpper())</span>
+                    }
                 </div>
-                @if (Model.IsCurrentUser)
-                {
-                    <a asp-controller="Account" asp-action="EditProfile" class="profile-hero__settings">
-                        <svg class="icon"><use href="#i-edit"/></svg>
-                        <span>Настройки</span>
-                    </a>
-                }
-            </div>
-
-            <div class="profile-stats">
-                <div class="profile-stat">
-                    <div class="profile-stat__row"><svg class="icon"><use href="#i-book"/></svg><span class="profile-stat__num">@Model.BooksCount</span></div>
-                    <div class="profile-stat__label">книг</div>
-                </div>
-                <div class="profile-stat">
-                    <div class="profile-stat__row"><svg class="icon"><use href="#i-swap"/></svg><span class="profile-stat__num">@Model.CompletedExchanges</span></div>
-                    <div class="profile-stat__label">обменов</div>
-                </div>
-                <div class="profile-stat">
-                    <div class="profile-stat__row"><svg class="icon"><use href="#i-star"/></svg><span class="profile-stat__num">@Model.Rating.ToString("0.0")</span></div>
-                    <div class="profile-stat__label">рейтинг</div>
+                <div class="profile-head-body">
+                    <div class="profile-head-top">
+                        <div>
+                            <h1 class="mb-2">@Model.UserName</h1>
+                            <div class="profile-meta">
+                                @if (!string.IsNullOrEmpty(Model.Location))
+                                {
+                                    <span><svg class="icon"><use href="#i-location"/></svg>@Model.Location</span>
+                                }
+                                <span><svg class="icon rating-star icon--fill"><use href="#i-star"/></svg>@Model.Rating.ToString("0.0")</span>
+                                <span><svg class="icon"><use href="#i-calendar"/></svg>Участник с @Model.RegistrationDate.ToLocalTime().ToString("MMMM yyyy")</span>
+                            </div>
+                        </div>
+                        @if (Model.IsCurrentUser)
+                        {
+                            <a asp-controller="Account" asp-action="EditProfile" class="btn btn-outline">
+                                <svg class="icon"><use href="#i-edit"/></svg>
+                                Редактировать
+                            </a>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
 
-<section class="section">
-    <div class="panel panel--flush tabs-card">
-        <div class="tabs-strip">
-            <button class="tab-btn active" data-tab="books"><svg class="icon"><use href="#i-book"/></svg> Мои книги <span class="tab-count">@Model.MyBooks.Count</span></button>
-            <button class="tab-btn" data-tab="exchanges"><svg class="icon"><use href="#i-swap"/></svg> Обмены <span class="tab-count">@Model.Exchanges.Count</span></button>
-            <button class="tab-btn" data-tab="favorites"><svg class="icon"><use href="#i-heart"/></svg> Избранное <span class="tab-count">@Model.Favorites.Count</span></button>
-            <button class="tab-btn" data-tab="wishlist"><svg class="icon"><use href="#i-bookmark"/></svg> Вишлист <span class="tab-count">@Model.Wishlist.Count</span></button>
-            <button class="tab-btn" data-tab="reviews"><svg class="icon"><use href="#i-star"/></svg> Отзывы</button>
+        @* Stats *@
+        <div class="profile-stats-grid mb-6">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="stat-card__icon stat-card__icon--blue">
+                        <svg class="icon"><use href="#i-book"/></svg>
+                    </div>
+                    <div class="stat-card__value">@Model.BooksCount</div>
+                    <div class="stat-card__label">книг</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="stat-card__icon stat-card__icon--green">
+                        <svg class="icon"><use href="#i-swap"/></svg>
+                    </div>
+                    <div class="stat-card__value">@Model.CompletedExchanges</div>
+                    <div class="stat-card__label">обменов</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="stat-card__icon stat-card__icon--yellow">
+                        <svg class="icon icon--fill"><use href="#i-star"/></svg>
+                    </div>
+                    <div class="stat-card__value">@Model.Rating.ToString("0.0")</div>
+                    <div class="stat-card__label">рейтинг</div>
+                </div>
+            </div>
         </div>
 
-        <div class="tab-content-wrap">
+        @* Tabs *@
+        <div class="tabs">
+            <div class="tabs-list">
+                <button type="button" class="tab-btn active" data-tab="books">
+                    <svg class="icon"><use href="#i-book"/></svg>
+                    Мои книги (@Model.MyBooks.Count)
+                </button>
+                <button type="button" class="tab-btn" data-tab="exchanges">
+                    <svg class="icon"><use href="#i-swap"/></svg>
+                    Обмены (@Model.Exchanges.Count)
+                </button>
+                <button type="button" class="tab-btn" data-tab="favorites">
+                    <svg class="icon"><use href="#i-heart"/></svg>
+                    Избранное (@Model.Favorites.Count)
+                </button>
+                <button type="button" class="tab-btn" data-tab="wishlist">
+                    <svg class="icon"><use href="#i-bookmark"/></svg>
+                    Вишлист (@Model.Wishlist.Count)
+                </button>
+                <button type="button" class="tab-btn" data-tab="reviews">
+                    <svg class="icon"><use href="#i-star"/></svg>
+                    Отзывы (@Model.ReviewsReceived.Count)
+                </button>
+            </div>
+
             <div class="tab-content" id="tab-books">
                 @if (Model.IsCurrentUser)
                 {
-                    <div class="catalog-grid">
-                        <a asp-controller="Book" asp-action="Create" class="book-tile book-tile--add">
-                            <div class="book-tile__plus"><svg class="icon"><use href="#i-plus"/></svg></div>
+                    <div class="book-grid">
+                        <a asp-controller="Book" asp-action="Create" class="book-tile-add">
+                            <div class="book-tile-add__plus">
+                                <svg class="icon"><use href="#i-plus"/></svg>
+                            </div>
                             <strong>Добавить книгу</strong>
                         </a>
                         @foreach (var b in Model.MyBooks) { <partial name="_BookCard" model="b" /> }
@@ -83,14 +112,14 @@
                 }
                 else if (Model.MyBooks.Count == 0)
                 {
-                    <div class="empty">
-                        <svg class="icon icon-xl"><use href="#i-book"/></svg>
+                    <div class="empty-state card">
+                        <svg class="icon"><use href="#i-book"/></svg>
                         <p>На полке пусто.</p>
                     </div>
                 }
                 else
                 {
-                    <div class="catalog-grid">
+                    <div class="book-grid">
                         @foreach (var b in Model.MyBooks) { <partial name="_BookCard" model="b" /> }
                     </div>
                 }
@@ -99,34 +128,45 @@
             <div class="tab-content" id="tab-exchanges" hidden>
                 @if (Model.Exchanges.Count == 0)
                 {
-                    <div class="empty">
-                        <svg class="icon icon-xl"><use href="#i-swap"/></svg>
+                    <div class="empty-state card">
+                        <svg class="icon"><use href="#i-swap"/></svg>
                         <p>Пока нет обменов.</p>
                     </div>
                 }
                 else
                 {
-                    <div class="exchange-list">
+                    <div class="stack">
                         @foreach (var e in Model.Exchanges)
                         {
-                            var pillClass = e.Status switch {
-                                ExchangeStatus.Pending => "chip--pending",
-                                ExchangeStatus.Accepted => "chip--accepted",
-                                ExchangeStatus.Completed => "chip--ok",
-                                ExchangeStatus.Rejected => "chip--danger",
-                                ExchangeStatus.Cancelled => "chip--danger",
-                                _ => ""
+                            var statusBadge = e.Status switch
+                            {
+                                ExchangeStatus.Pending => "badge--yellow",
+                                ExchangeStatus.Accepted => "badge--blue",
+                                ExchangeStatus.Completed => "badge--green",
+                                ExchangeStatus.Rejected => "badge--red",
+                                ExchangeStatus.Cancelled => "badge--secondary",
+                                _ => "badge--secondary"
                             };
                             <a asp-controller="Exchange" asp-action="Details" asp-route-id="@e.Id" class="exchange-row">
-                                <div class="exchange-row__info">
-                                    <div class="exchange-row__user">
-                                        <svg class="icon"><use href="#i-user"/></svg>
-                                        <strong>@e.OtherUserName</strong>
+                                <div class="exchange-row__main">
+                                    @if (!string.IsNullOrEmpty(e.OtherUserAvatar))
+                                    {
+                                        <img src="@e.OtherUserAvatar" alt="" class="exchange-row__avatar" />
+                                    }
+                                    else
+                                    {
+                                        <span class="exchange-row__avatar">@(string.IsNullOrEmpty(e.OtherUserName) ? "?" : e.OtherUserName.Substring(0, 1).ToUpper())</span>
+                                    }
+                                    <div class="exchange-row__body">
+                                        <div class="exchange-row__title">@e.OtherUserName</div>
+                                        <div class="exchange-row__sub">
+                                            <span>@e.BookRequestedTitle</span>
+                                            <span>·</span>
+                                            <span>@e.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</span>
+                                        </div>
                                     </div>
-                                    <div class="exchange-row__book">@e.BookRequestedTitle</div>
-                                    <div class="exchange-row__date">@e.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</div>
                                 </div>
-                                <span class="chip @pillClass">@e.StatusLabel</span>
+                                <span class="badge @statusBadge">@e.StatusLabel</span>
                             </a>
                         }
                     </div>
@@ -136,65 +176,89 @@
             <div class="tab-content" id="tab-favorites" hidden>
                 @if (Model.Favorites.Count == 0)
                 {
-                    <div class="empty">
-                        <svg class="icon icon-xl"><use href="#i-heart"/></svg>
+                    <div class="empty-state card">
+                        <svg class="icon"><use href="#i-heart"/></svg>
                         <p>В избранном пусто.</p>
                     </div>
                 }
                 else
                 {
-                    <div class="catalog-grid">@foreach (var b in Model.Favorites) { <partial name="_BookCard" model="b" /> }</div>
+                    <div class="book-grid">@foreach (var b in Model.Favorites) { <partial name="_BookCard" model="b" /> }</div>
                 }
             </div>
 
             <div class="tab-content" id="tab-wishlist" hidden>
                 @if (Model.Wishlist.Count == 0)
                 {
-                    <div class="empty">
-                        <svg class="icon icon-xl"><use href="#i-bookmark"/></svg>
+                    <div class="empty-state card">
+                        <svg class="icon"><use href="#i-bookmark"/></svg>
                         <p>Вишлист пока пуст.</p>
                     </div>
                 }
                 else
                 {
-                    <div class="catalog-grid">@foreach (var b in Model.Wishlist) { <partial name="_BookCard" model="b" /> }</div>
+                    <div class="book-grid">@foreach (var b in Model.Wishlist) { <partial name="_BookCard" model="b" /> }</div>
                 }
             </div>
 
             <div class="tab-content" id="tab-reviews" hidden>
-                <div class="two-col">
-                    <div>
-                        <h3 class="panel__title">Полученные (@Model.ReviewsReceived.Count)</h3>
-                        @if (Model.ReviewsReceived.Count == 0) { <p class="text-muted">Пока нет отзывов.</p> }
-                        @foreach (var r in Model.ReviewsReceived)
-                        {
-                            <div class="review-item">
-                                <div class="flex items-center gap-2">
-                                    <strong>@r.FromUserName</strong>
-                                    <span class="text-rating">@(new string('★', r.Rating))<span style="color:var(--line);">@(new string('★', 5 - r.Rating))</span></span>
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Полученные (@Model.ReviewsReceived.Count)</h3>
+                        </div>
+                        <div class="card-body stack">
+                            @if (Model.ReviewsReceived.Count == 0)
+                            {
+                                <p class="text-muted">Пока нет отзывов.</p>
+                            }
+                            @foreach (var r in Model.ReviewsReceived)
+                            {
+                                <div class="review-item">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <strong>@r.FromUserName</strong>
+                                        <span class="text-sm text-muted">
+                                            @for (int i = 0; i < 5; i++)
+                                            {
+                                                <svg class="icon rating-star @(i < r.Rating ? "icon--fill" : "")"><use href="#i-star"/></svg>
+                                            }
+                                        </span>
+                                    </div>
+                                    <p class="text-sm" style="color:var(--gray-700);">@r.Comment</p>
+                                    <div class="text-xs text-muted mt-2">@r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</div>
                                 </div>
-                                <p>@r.Comment</p>
-                                <small class="text-muted">@r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</small>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="panel__title">Оставленные (@Model.ReviewsGiven.Count)</h3>
-                        @if (Model.ReviewsGiven.Count == 0) { <p class="text-muted">Пока пусто.</p> }
-                        @foreach (var r in Model.ReviewsGiven)
-                        {
-                            <div class="review-item">
-                                <div class="flex items-center gap-2">
-                                    <span>Для <strong>@r.ToUserName</strong></span>
-                                    <span class="text-rating">@(new string('★', r.Rating))<span style="color:var(--line);">@(new string('★', 5 - r.Rating))</span></span>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Оставленные (@Model.ReviewsGiven.Count)</h3>
+                        </div>
+                        <div class="card-body stack">
+                            @if (Model.ReviewsGiven.Count == 0)
+                            {
+                                <p class="text-muted">Пока пусто.</p>
+                            }
+                            @foreach (var r in Model.ReviewsGiven)
+                            {
+                                <div class="review-item">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span>Для <strong>@r.ToUserName</strong></span>
+                                        <span class="text-sm text-muted">
+                                            @for (int i = 0; i < 5; i++)
+                                            {
+                                                <svg class="icon rating-star @(i < r.Rating ? "icon--fill" : "")"><use href="#i-star"/></svg>
+                                            }
+                                        </span>
+                                    </div>
+                                    <p class="text-sm" style="color:var(--gray-700);">@r.Comment</p>
+                                    <div class="text-xs text-muted mt-2">@r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</div>
                                 </div>
-                                <p>@r.Comment</p>
-                                <small class="text-muted">@r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</small>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>

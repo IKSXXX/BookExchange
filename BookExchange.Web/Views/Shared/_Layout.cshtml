@@ -8,17 +8,18 @@
         : "?";
     var currentController = (string?)ViewContext.RouteData.Values["controller"] ?? "";
     var currentAction = (string?)ViewContext.RouteData.Values["action"] ?? "";
-    var hideRail = ViewData["HideRail"] as bool? ?? false;
     var isAuthPage = currentController == "Account" && (currentAction == "Login" || currentAction == "Register");
-    var showRail = !hideRail && !isAuthPage;
 }
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@(ViewData["Title"] ?? "BookSwap") — BookSwap</title>
-    <meta name="description" content="BookSwap — платформа для обмена книгами между читателями." />
+    <title>@(ViewData["Title"] ?? "КнигоОбмен") — КнигоОбмен</title>
+    <meta name="description" content="КнигоОбмен — платформа для обмена книгами между читателями по всей России." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
@@ -26,7 +27,7 @@
     @* ---------- SVG sprite ---------- *@
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
         <defs>
-            <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4h10a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4V4z"/><path d="M4 16a4 4 0 0 1 4-4h10"/></symbol>
+            <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
             <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></symbol>
             <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
             <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></symbol>
@@ -54,6 +55,9 @@
             <symbol id="i-location" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
             <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
             <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+            <symbol id="i-filter" viewBox="0 0 24 24"><path d="M22 3H2l8 9.5V19l4 2v-8.5L22 3z"/></symbol>
+            <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-11 11"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></symbol>
+            <symbol id="i-message-circle" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></symbol>
         </defs>
     </svg>
 
@@ -61,124 +65,107 @@
         <div class="container">
             <a href="/" class="brand">
                 <span class="brand-mark"><svg class="icon"><use href="#i-book"/></svg></span>
-                <span class="brand-name">Book<span class="accent">Swap</span></span>
+                <span class="brand-name">Книго<span class="accent">Обмен</span></span>
             </a>
-            <button class="nav-toggle" id="navToggle" aria-label="Меню">
+            <button class="nav-toggle" id="navToggle" aria-label="Меню" type="button">
                 <svg class="icon"><use href="#i-menu"/></svg>
             </button>
             <nav class="nav-links" id="navLinks">
                 <a asp-controller="Home" asp-action="Index"
                    class="nav-link @(currentController == "Home" ? "is-active" : "")">
-                    <svg class="icon"><use href="#i-home"/></svg> Главная
+                    Главная
                 </a>
                 <a asp-controller="Book" asp-action="Index"
-                   class="nav-link @(currentController == "Book" ? "is-active" : "")">
-                    <svg class="icon"><use href="#i-search"/></svg> Каталог
+                   class="nav-link @(currentController == "Book" && currentAction == "Index" ? "is-active" : "")">
+                    Каталог
                 </a>
                 @if (SignInManager.IsSignedIn(User))
                 {
-                    <a asp-controller="Book" asp-action="Create" class="nav-link">
-                        <svg class="icon"><use href="#i-plus"/></svg> Добавить
+                    <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser!.Id"
+                       class="nav-link @(currentController == "User" ? "is-active" : "")">
+                        Личный кабинет
                     </a>
                     @if (isAdmin)
                     {
                         <a asp-controller="Admin" asp-action="Index"
                            class="nav-link @(currentController == "Admin" ? "is-active" : "")">
-                            <svg class="icon"><use href="#i-shield"/></svg>
                             <span class="badge badge--admin">Админ</span>
                         </a>
                     }
+                }
 
-                    <div class="user-menu" id="userMenu">
-                        <button class="user-trigger" type="button" id="userTrigger">
-                            @if (!string.IsNullOrEmpty(currentUser!.AvatarPath))
-                            {
-                                <img src="@currentUser.AvatarPath" class="user-avatar" alt="@currentUser.UserName" />
-                            }
-                            else
-                            {
-                                <span class="user-avatar">@userInitial</span>
-                            }
-                            <span>@currentUser.UserName</span>
-                            <svg class="icon user-caret"><use href="#i-chevron-down"/></svg>
-                        </button>
-                        <div class="user-dropdown">
-                            <div class="user-dropdown__header">
-                                <div class="user-dropdown__name">@currentUser.UserName</div>
-                                <div class="user-dropdown__email">@currentUser.Email</div>
+                <div class="nav-cta">
+                    <a asp-controller="Book" asp-action="Index" class="btn btn-outline btn-sm">
+                        <svg class="icon"><use href="#i-search"/></svg>
+                        Найти книгу
+                    </a>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <div class="user-menu" id="userMenu">
+                            <button class="user-trigger" type="button" id="userTrigger">
+                                @if (!string.IsNullOrEmpty(currentUser!.AvatarPath))
+                                {
+                                    <img src="@currentUser.AvatarPath" class="user-avatar" alt="@currentUser.UserName" />
+                                }
+                                else
+                                {
+                                    <span class="user-avatar">@userInitial</span>
+                                }
+                                <svg class="icon user-caret"><use href="#i-chevron-down"/></svg>
+                            </button>
+                            <div class="user-dropdown">
+                                <div class="user-dropdown__header">
+                                    <div class="user-dropdown__name">@currentUser.UserName</div>
+                                    <div class="user-dropdown__email">@currentUser.Email</div>
+                                </div>
+                                <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser.Id">
+                                    <svg class="icon"><use href="#i-user"/></svg> Мой профиль
+                                </a>
+                                <a asp-controller="Account" asp-action="EditProfile">
+                                    <svg class="icon"><use href="#i-settings"/></svg> Настройки
+                                </a>
+                                <a asp-controller="Book" asp-action="Create">
+                                    <svg class="icon"><use href="#i-plus"/></svg> Добавить книгу
+                                </a>
+                                <form asp-controller="Account" asp-action="Logout" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="danger">
+                                        <svg class="icon"><use href="#i-logout"/></svg> Выйти
+                                    </button>
+                                </form>
                             </div>
-                            <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser.Id">
-                                <svg class="icon"><use href="#i-user"/></svg> Мой профиль
-                            </a>
-                            <a asp-controller="Account" asp-action="EditProfile">
-                                <svg class="icon"><use href="#i-settings"/></svg> Настройки
-                            </a>
-                            <form asp-controller="Account" asp-action="Logout" method="post">
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="danger">
-                                    <svg class="icon"><use href="#i-logout"/></svg> Выйти
-                                </button>
-                            </form>
                         </div>
-                    </div>
-                }
-                else
-                {
-                    <a asp-controller="Account" asp-action="Login" class="nav-link">
-                        <svg class="icon"><use href="#i-login"/></svg> Войти
-                    </a>
-                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm">
-                        Регистрация
-                    </a>
-                }
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-sm">
+                            <svg class="icon"><use href="#i-user"/></svg>
+                            Войти
+                        </a>
+                    }
+                </div>
             </nav>
         </div>
     </header>
 
-    <div class="page-wrap @(showRail ? "page-wrap--with-rail" : "")">
-        @if (showRail)
-        {
-            <aside class="app-rail" id="appRail">
-                <div class="app-rail__inner">
-                    <div class="panel ai-panel">
-                        <span class="eyebrow">AI-помощник</span>
-                        <h2 class="ai-panel__title">
-                            <svg class="icon"><use href="#i-sparkles"/></svg>
-                            Что почитать?
-                        </h2>
-                        <p class="ai-panel__hint">
-                            Опиши настроение, жанр или сюжет — подберём из каталога.
-                        </p>
-                        <form id="railAiForm" class="ai-panel__form">
-                            <input name="query" type="text" class="form-input" placeholder="фэнтези про магию…" required />
-                            <button type="submit" class="btn btn-primary w-full">
-                                <svg class="icon"><use href="#i-sparkles"/></svg> Подобрать
-                            </button>
-                        </form>
-                        <div id="railAiResults" class="ai-panel__results"></div>
-                        <div class="ai-panel__disclaimer">
-                            Заглушка: поиск идёт по ключевым словам.
-                        </div>
-                    </div>
-                </div>
-            </aside>
-            <button class="rail-toggle" id="railToggle" aria-label="AI-помощник" type="button">
-                <svg class="icon"><use href="#i-sparkles"/></svg>
-            </button>
-        }
-        <main class="container fade-in">
+    <div class="page-wrap">
+        <main class="fade-in">
             @if (TempData["Success"] is string ok)
             {
-                <div class="alert alert--success">
-                    <svg class="icon"><use href="#i-check"/></svg>
-                    <span>@ok</span>
+                <div class="container" style="padding-top:1rem">
+                    <div class="alert alert--success">
+                        <svg class="icon"><use href="#i-check"/></svg>
+                        <span>@ok</span>
+                    </div>
                 </div>
             }
             @if (TempData["Error"] is string err)
             {
-                <div class="alert alert--danger">
-                    <svg class="icon"><use href="#i-x"/></svg>
-                    <span>@err</span>
+                <div class="container" style="padding-top:1rem">
+                    <div class="alert alert--danger">
+                        <svg class="icon"><use href="#i-x"/></svg>
+                        <span>@err</span>
+                    </div>
                 </div>
             }
             @RenderBody()
@@ -188,48 +175,48 @@
     <footer>
         <div class="container">
             <div>
-                <a href="/" class="brand">
-                    <span class="brand-mark"><svg class="icon"><use href="#i-book"/></svg></span>
-                    <span class="brand-name">Book<span class="accent">Swap</span></span>
-                </a>
-                <p class="text-sm" style="margin-top: 12px;">
-                    Платформа обмена книгами между читателями. Делись историями, находи новые.
-                </p>
+                <div>
+                    <h4>КнигоОбмен</h4>
+                    <p>Платформа для обмена книгами между читателями по всей России</p>
+                </div>
+                <div>
+                    <h4>Навигация</h4>
+                    <ul>
+                        <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
+                        <li><a asp-controller="Book" asp-action="Index">Каталог</a></li>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li><a asp-controller="User" asp-action="Details" asp-route-id="@currentUser!.Id">Профиль</a></li>
+                        }
+                    </ul>
+                </div>
+                <div>
+                    <h4>Помощь</h4>
+                    <ul>
+                        <li><a asp-controller="Home" asp-action="Privacy">Как это работает</a></li>
+                        <li><a asp-controller="Home" asp-action="Privacy">Правила обмена</a></li>
+                        <li><a asp-controller="Home" asp-action="Privacy">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Контакты</h4>
+                    <ul>
+                        <li><a href="mailto:info@bookswap.example">Поддержка</a></li>
+                        <li><a asp-controller="Home" asp-action="Privacy">О проекте</a></li>
+                    </ul>
+                </div>
             </div>
-            <div>
-                <h4>Навигация</h4>
-                <a asp-controller="Home" asp-action="Index">Главная</a><br />
-                <a asp-controller="Book" asp-action="Index">Каталог</a>
-                @if (SignInManager.IsSignedIn(User))
-                {
-                    <br />
-                    <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser!.Id">Мой профиль</a>
-                }
+            <div class="footer-bottom">
+                © @DateTime.Now.Year КнигоОбмен. Все права защищены.
             </div>
-            <div>
-                <h4>Помощь</h4>
-                <a asp-controller="Home" asp-action="Privacy">Условия</a><br />
-                <a href="mailto:info@bookswap.example">Контакты</a>
-            </div>
-            <div>
-                <h4>Сообщество</h4>
-                <p class="text-sm">
-                    Присоединяйся — уже сотни читателей обмениваются книгами каждый день.
-                </p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            © @DateTime.Now.Year BookSwap — Обменивайся книгами с радостью.
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
     <script>
-        // mobile nav toggle
         document.getElementById('navToggle')?.addEventListener('click', () => {
             document.getElementById('navLinks')?.classList.toggle('is-open');
         });
-        // user dropdown
         const userMenu = document.getElementById('userMenu');
         document.getElementById('userTrigger')?.addEventListener('click', e => {
             e.stopPropagation();
@@ -249,49 +236,6 @@
             if (!container || !tab) return;
             container.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
             container.querySelectorAll('.tab-content').forEach(c => c.hidden = (c.id !== 'tab-' + tab));
-        });
-
-        // rail toggle (mobile drawer)
-        const rail = document.getElementById('appRail');
-        const railToggle = document.getElementById('railToggle');
-        railToggle?.addEventListener('click', () => {
-            rail?.classList.toggle('is-open');
-            document.body.classList.toggle('rail-open');
-        });
-        document.addEventListener('click', e => {
-            if (!rail || !rail.classList.contains('is-open')) return;
-            if (rail.contains(e.target) || railToggle?.contains(e.target)) return;
-            rail.classList.remove('is-open');
-            document.body.classList.remove('rail-open');
-        });
-
-        // rail AI form
-        document.getElementById('railAiForm')?.addEventListener('submit', async e => {
-            e.preventDefault();
-            const q = e.target.query.value.trim();
-            if (!q) return;
-            const fd = new FormData();
-            fd.append('query', q);
-            const box = document.getElementById('railAiResults');
-            box.innerHTML = '<div class="ai-empty">Ищу…</div>';
-            try {
-                const res = await fetch('/ai/recommend', { method: 'POST', body: fd });
-                const data = await res.json();
-                const books = data.books || [];
-                if (!books.length) { box.innerHTML = '<div class="ai-empty">Ничего не нашлось.</div>'; return; }
-                box.innerHTML = books.slice(0, 6).map(b => `
-                    <a class="ai-result" href="/book/details/${b.id}">
-                        <div class="ai-result__cover">
-                            ${b.coverImagePath ? `<img src="${b.coverImagePath}" alt="${b.title}"/>` : '<span class="ai-result__placeholder">📖</span>'}
-                        </div>
-                        <div class="ai-result__body">
-                            <div class="ai-result__title">${b.title}</div>
-                            <div class="ai-result__author">${b.author}</div>
-                        </div>
-                    </a>`).join('');
-            } catch {
-                box.innerHTML = '<div class="ai-empty">Ошибка запроса.</div>';
-            }
         });
     </script>
     <script src="~/js/site.js" asp-append-version="true"></script>

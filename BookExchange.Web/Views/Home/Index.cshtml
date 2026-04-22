@@ -4,147 +4,168 @@
     ViewData["Title"] = "Главная";
 }
 
+@* ---------- Hero ---------- *@
 <section class="hero">
-    <div class="hero-inner">
-        <span class="hero-eyebrow">
-            <svg class="icon"><use href="#i-sparkles"/></svg>
-            Новое поколение книжного обмена
-        </span>
-        <h1>Обменивайтесь книгами<br/><em>с единомышленниками</em></h1>
-        <p>
-            BookSwap — это сообщество любителей чтения.
-            Находите редкие издания, делитесь своими книгами
-            и открывайте новые миры через страницы историй.
+    <div class="container">
+        <h1>Обменивайтесь книгами<br/>с другими читателями</h1>
+        <p class="hero__sub">
+            Платформа для обмена книгами между любителями чтения. Находите интересные произведения,
+            делитесь своими книгами и открывайте новые миры.
         </p>
-        <div class="hero-actions">
-            <a asp-controller="Book" asp-action="Index" class="btn btn-primary btn-lg">
-                <svg class="icon"><use href="#i-search"/></svg> Найти книгу
+        <div class="hero__ctas">
+            <a asp-controller="Book" asp-action="Index" class="btn btn-on-blue btn-lg">
+                <svg class="icon"><use href="#i-search"/></svg>
+                Найти книгу
             </a>
             @if (!SignInManager.IsSignedIn(User))
             {
-                <a asp-controller="Account" asp-action="Register" class="btn btn-outline btn-lg">
-                    Присоединиться <svg class="icon"><use href="#i-arrow-right"/></svg>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-blue-outline btn-lg">
+                    Присоединиться
+                    <svg class="icon"><use href="#i-arrow-right"/></svg>
                 </a>
             }
             else
             {
-                <a asp-controller="Book" asp-action="Create" class="btn btn-outline btn-lg">
-                    <svg class="icon"><use href="#i-plus"/></svg> Добавить книгу
+                <a asp-controller="Book" asp-action="Create" class="btn btn-blue-outline btn-lg">
+                    <svg class="icon"><use href="#i-plus"/></svg>
+                    Добавить книгу
                 </a>
             }
         </div>
-        <div class="hero-metrics">
-            <div class="hero-metric">
-                <div class="hero-metric__value">1,200+</div>
-                <div class="hero-metric__label">книг в каталоге</div>
-            </div>
-            <div class="hero-metric">
-                <div class="hero-metric__value">450+</div>
-                <div class="hero-metric__label">активных читателей</div>
-            </div>
-            <div class="hero-metric">
-                <div class="hero-metric__value">890+</div>
-                <div class="hero-metric__label">успешных обменов</div>
-            </div>
-        </div>
     </div>
 </section>
 
-<section class="section">
-    <div class="features-grid">
-        <div class="feature-tile">
-            <div class="feature-tile__icon feature-tile__icon--green">
-                <svg class="icon"><use href="#i-book"/></svg>
-            </div>
-            <h3>Большой каталог</h3>
-            <p>Тысячи книг от читателей со всей страны — классика, новинки, редкие издания.</p>
+@* ---------- How it works ---------- *@
+<section class="section section--gray">
+    <div class="container">
+        <div class="text-center mb-8">
+            <h2 class="mb-3">Как это работает</h2>
+            <p class="text-muted text-lg">Три простых шага для начала обмена</p>
         </div>
-        <div class="feature-tile">
-            <div class="feature-tile__icon feature-tile__icon--orange">
-                <svg class="icon"><use href="#i-swap"/></svg>
-            </div>
-            <h3>Простой обмен</h3>
-            <p>Выбирайте книги, предлагайте свои — и договаривайтесь о встрече прямо в чате.</p>
-        </div>
-        <div class="feature-tile">
-            <div class="feature-tile__icon feature-tile__icon--lime">
-                <svg class="icon"><use href="#i-users"/></svg>
-            </div>
-            <h3>Сообщество</h3>
-            <p>Знакомьтесь с читателями, обсуждайте книги и находите новые литературные рекомендации.</p>
-        </div>
-        <div class="feature-tile">
-            <div class="feature-tile__icon feature-tile__icon--amber">
-                <svg class="icon"><use href="#i-sparkles"/></svg>
-            </div>
-            <h3>AI-помощник</h3>
-            <p>Умный помощник подберёт книги под ваши вкусы и расскажет, что почитать следующим.</p>
-        </div>
-    </div>
-</section>
-
-<section class="section">
-    <div class="home-features">
-        @* --- КНИГА ДНЯ --- *@
-        <div class="panel feature-card feature-card--day">
-            <span class="eyebrow">Книга дня</span>
-            <h2 class="section-title">
-                <svg class="icon"><use href="#i-bookmark"/></svg>
-                Сегодня рекомендуем
-            </h2>
-            @if (Model.BookOfTheDay != null)
-            {
-                <div class="book-of-day">
-                    <partial name="_BookCard" model="Model.BookOfTheDay" />
+        <div class="steps-grid">
+            <div class="step">
+                <div class="step__icon step__icon--blue">
+                    <svg class="icon"><use href="#i-book"/></svg>
                 </div>
-            }
-            else
-            {
-                <div class="empty">
-                    <svg class="icon icon-xl"><use href="#i-bookmark"/></svg>
-                    <p>Сегодня админ ещё не выбрал книгу дня.</p>
+                <h3>Найдите книгу</h3>
+                <p>Просматривайте каталог книг других читателей и выбирайте то, что хотите прочитать</p>
+            </div>
+            <div class="step">
+                <div class="step__icon step__icon--green">
+                    <svg class="icon"><use href="#i-swap"/></svg>
                 </div>
-            }
-        </div>
-
-        @* --- МИНИ-ИГРА --- *@
-        <div class="panel feature-card feature-card--quiz">
-            <span class="eyebrow">Мини-игра</span>
-            <h2 class="section-title section-title--accent">
-                <svg class="icon"><use href="#i-sparkles"/></svg>
-                Угадай книгу по цитате
-            </h2>
-            <div id="quizWidget" data-initial='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.QuizQuestion))'>
-                <p class="text-muted">Загрузка…</p>
+                <h3>Предложите обмен</h3>
+                <p>Предложите свои книги взамен и договоритесь об условиях обмена</p>
+            </div>
+            <div class="step">
+                <div class="step__icon step__icon--purple">
+                    <svg class="icon"><use href="#i-users"/></svg>
+                </div>
+                <h3>Встретьтесь и обменяйтесь</h3>
+                <p>Свяжитесь друг с другом через чат и договоритесь о встрече</p>
             </div>
         </div>
     </div>
 </section>
 
+@* ---------- Latest books ---------- *@
 <section class="section">
-    <div class="page-header page-header--slim">
-        <div>
-            <span class="eyebrow">Свежее поступление</span>
-            <h2 class="section-title" style="margin: 0;">
-                <svg class="icon"><use href="#i-sparkles"/></svg>
-                Недавно добавленные
-            </h2>
+    <div class="container">
+        <div class="section-head">
+            <h2>Новые книги</h2>
+            <a asp-controller="Book" asp-action="Index" class="btn btn-outline">
+                Весь каталог
+                <svg class="icon"><use href="#i-arrow-right"/></svg>
+            </a>
         </div>
-        <a asp-controller="Book" asp-action="Index" class="btn btn-ghost btn-sm">
-            Все книги <svg class="icon"><use href="#i-arrow-right"/></svg>
-        </a>
-    </div>
-    <div class="catalog-grid">
-        @foreach (var b in Model.RecentBooks)
+        @if (Model.RecentBooks.Any())
         {
-            <partial name="_BookCard" model="b" />
+            <div class="book-grid book-grid--6">
+                @foreach (var b in Model.RecentBooks.Take(6))
+                {
+                    <partial name="_BookCard" model="b" />
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state card">
+                <svg class="icon"><use href="#i-book"/></svg>
+                <p>В каталоге пока нет книг.</p>
+            </div>
         }
     </div>
 </section>
 
+@* ---------- CTA ---------- *@
+<section class="section section--blue-soft">
+    <div class="container text-center">
+        <h2 class="mb-3">Готовы начать обмен?</h2>
+        <p class="text-muted text-lg mb-6">
+            Присоединяйтесь к сообществу любителей книг и открывайте новые истории
+        </p>
+        @if (!SignInManager.IsSignedIn(User))
+        {
+            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg">
+                Зарегистрироваться
+                <svg class="icon"><use href="#i-arrow-right"/></svg>
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Book" asp-action="Create" class="btn btn-primary btn-lg">
+                <svg class="icon"><use href="#i-plus"/></svg>
+                Добавить книгу в обмен
+            </a>
+        }
+    </div>
+</section>
+
+@* ---------- Book of the day + quiz ---------- *@
+@if (Model.BookOfTheDay != null || Model.QuizQuestion != null)
+{
+    <section class="section">
+        <div class="container">
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+                @if (Model.BookOfTheDay != null)
+                {
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <svg class="icon icon-lg text-primary"><use href="#i-bookmark"/></svg>
+                                Книга дня
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="max-width: 220px;">
+                                <partial name="_BookCard" model="Model.BookOfTheDay" />
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (Model.QuizQuestion != null)
+                {
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <svg class="icon icon-lg" style="color: var(--purple-600);"><use href="#i-sparkles"/></svg>
+                                Угадай книгу по цитате
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="quizWidget" data-initial='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.QuizQuestion))'>
+                                <p class="text-muted">Загрузка…</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
 @section Scripts {
     <script>
-        // Quiz widget
         (function() {
             const widget = document.getElementById('quizWidget');
             if (!widget) return;
@@ -152,19 +173,17 @@
             try { initial = JSON.parse(widget.dataset.initial); } catch { }
             function render(q) {
                 if (!q) {
-                    widget.innerHTML = '<div class="empty"><p class="text-muted">Пока нет вопросов для игры.</p></div>';
+                    widget.innerHTML = '<p class="text-muted">Пока нет вопросов.</p>';
                     return;
                 }
                 const opts = q.options.map(o =>
-                    `<button type="button" class="quiz-option" data-ans="${o.replace(/"/g,'&quot;')}">${o}</button>`
+                    `<button type="button" class="btn btn-outline w-full mt-2" data-ans="${o.replace(/"/g,'&quot;')}">${o}</button>`
                 ).join('');
                 widget.innerHTML = `
-                    <div class="quiz-widget-card">
-                        <blockquote class="quiz-quote">«${q.quote}»</blockquote>
-                        <div class="quiz-options">${opts}</div>
-                        <div class="quiz-result text-sm"></div>
-                    </div>`;
-                widget.querySelectorAll('.quiz-option').forEach(btn => {
+                    <blockquote style="padding:1rem;background:var(--gray-50);border-left:3px solid var(--blue-500);border-radius:var(--radius);font-style:italic;color:var(--gray-700);margin-bottom:1rem;">«${q.quote}»</blockquote>
+                    <div class="quiz-options" style="display:flex;flex-direction:column;gap:.5rem;">${opts}</div>
+                    <div class="quiz-result text-sm mt-3"></div>`;
+                widget.querySelectorAll('[data-ans]').forEach(btn => {
                     btn.addEventListener('click', async () => {
                         const answer = btn.dataset.ans;
                         try {
@@ -173,16 +192,24 @@
                             fd.append('answer', answer);
                             const res = await fetch('/quiz/answer', { method: 'POST', body: fd });
                             const data = await res.json();
-                            widget.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
+                            widget.querySelectorAll('[data-ans]').forEach(b => b.disabled = true);
                             if (data.isCorrect) {
-                                btn.classList.add('correct');
-                                widget.querySelector('.quiz-result').innerHTML = '<span class="chip chip--ok">✓ Верно!</span>';
+                                btn.style.background = 'var(--green-100)';
+                                btn.style.color = 'var(--green-800)';
+                                btn.style.borderColor = 'var(--green-500)';
+                                widget.querySelector('.quiz-result').innerHTML = '<span class="badge badge--green">Верно</span>';
                             } else {
-                                btn.classList.add('wrong');
-                                widget.querySelectorAll('.quiz-option').forEach(b => {
-                                    if (b.dataset.ans === data.correctAnswer) b.classList.add('correct');
+                                btn.style.background = 'var(--red-100)';
+                                btn.style.color = 'var(--red-800)';
+                                btn.style.borderColor = 'var(--red-600)';
+                                widget.querySelectorAll('[data-ans]').forEach(b => {
+                                    if (b.dataset.ans === data.correctAnswer) {
+                                        b.style.background = 'var(--green-100)';
+                                        b.style.color = 'var(--green-800)';
+                                        b.style.borderColor = 'var(--green-500)';
+                                    }
                                 });
-                                widget.querySelector('.quiz-result').innerHTML = '<span class="chip chip--danger">Верный ответ подсвечен зелёным</span>';
+                                widget.querySelector('.quiz-result').innerHTML = '<span class="badge badge--red">Верный ответ подсвечен зелёным</span>';
                             }
                             setTimeout(async () => {
                                 const r = await fetch('/quiz/next');

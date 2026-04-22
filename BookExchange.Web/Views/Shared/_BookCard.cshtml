@@ -1,39 +1,63 @@
 @*
-    Карточка книги для каталога / подборок.
-    Используется через <partial name="_BookCard" model="..." />.
+    Карточка книги — соответствует Figma BookCard: обложка 3:4, бейдж состояния справа сверху,
+    заголовок / автор / жанр в теле и метаинформация внизу.
 *@
 @model BookCardViewModel
+@{
+    string conditionClass = Model.ConditionLabel switch
+    {
+        "Отличное" => "badge--green",
+        "Новое" => "badge--green",
+        "Хорошее" => "badge--blue",
+        "Удовлетворительное" => "badge--yellow",
+        _ => "badge--secondary"
+    };
+}
 
-<a class="book-card-link" asp-controller="Book" asp-action="Details" asp-route-id="@Model.Id">
-    <div class="book-card @(Model.IsAvailable ? "" : "book-card--unavailable")">
-        <div class="book-card__cover">
-            @if (!string.IsNullOrWhiteSpace(Model.CoverImagePath))
-            {
-                <img src="@Model.CoverImagePath" alt="@Model.Title" />
-            }
-            else
-            {
-                <div class="book-card__cover-placeholder">📖</div>
-            }
-            @if (!Model.IsAvailable)
-            {
-                <span class="book-card__badge">Недоступна</span>
-            }
-        </div>
-        <div class="book-card__body">
-            <h3 class="book-card__title">@Model.Title</h3>
-            <p class="book-card__author">@Model.Author</p>
-            <div class="book-card__meta">
-                <span class="book-card__genre">@Model.Genre</span>
-                <span class="book-card__condition">@Model.ConditionLabel</span>
+<a class="book-card" asp-controller="Book" asp-action="Details" asp-route-id="@Model.Id">
+    <div class="book-card__media">
+        @if (!string.IsNullOrWhiteSpace(Model.CoverImagePath))
+        {
+            <img src="@Model.CoverImagePath" alt="@Model.Title" loading="lazy" />
+        }
+        else
+        {
+            <div class="book-card__placeholder">
+                <svg class="icon"><use href="#i-book" /></svg>
             </div>
-            <div class="book-card__owner">
-                @if (!string.IsNullOrEmpty(Model.Owner.Avatar))
-                {
-                    <img src="@Model.Owner.Avatar" alt="@Model.Owner.Name" class="book-card__avatar" />
-                }
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.ConditionLabel))
+        {
+            <span class="badge @conditionClass book-card__badge">@Model.ConditionLabel</span>
+        }
+        @if (!Model.IsAvailable)
+        {
+            <span class="badge badge--red book-card__badge" style="left:.5rem;right:auto;">Недоступна</span>
+        }
+    </div>
+    <div class="book-card__body">
+        <h3 class="book-card__title">@Model.Title</h3>
+        <p class="book-card__author">@Model.Author</p>
+        <span class="badge badge--secondary">@Model.Genre</span>
+    </div>
+    <div class="book-card__footer">
+        @if (!string.IsNullOrWhiteSpace(Model.Owner.Name))
+        {
+            <span class="book-card__meta">
+                <svg class="icon"><use href="#i-user" /></svg>
                 <span>@Model.Owner.Name</span>
-            </div>
-        </div>
+            </span>
+        }
+        else
+        {
+            <span></span>
+        }
+        @if (Model.Owner.Rating > 0)
+        {
+            <span class="book-card__meta">
+                <svg class="icon rating-star icon--fill"><use href="#i-star" /></svg>
+                <span>@Model.Owner.Rating.ToString("0.0")</span>
+            </span>
+        }
     </div>
 </a>
