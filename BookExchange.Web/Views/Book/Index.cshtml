@@ -3,24 +3,25 @@
     ViewData["Title"] = "Каталог";
 }
 
-<section class="section">
-    <div class="page-header">
-        <div>
-            <span class="eyebrow">Библиотека</span>
-            <h1>Каталог книг</h1>
-        </div>
-        <p class="text-muted text-sm">Всего: <strong>@Model.Pagination.TotalItems</strong> книг</p>
+<section class="page-hero page-hero--green">
+    <div class="page-hero__inner">
+        <h1>Каталог книг</h1>
+        <p>Найди свою следующую любимую книгу — всего <strong>@Model.Pagination.TotalItems</strong> изданий</p>
     </div>
+</section>
 
-    <form id="catalogForm" method="get" class="catalog-layout">
+<section class="section">
+    <form id="catalogForm" method="get">
+        <div class="catalog-search">
+            <svg class="icon catalog-search__icon"><use href="#i-search"/></svg>
+            <input type="text" name="search" value="@Model.SearchQuery" placeholder="Поиск по названию или автору..." />
+        </div>
+
+        <div class="catalog-layout">
         <aside class="catalog-filters">
-            <h3>Фильтры</h3>
-
-            <div class="filter-group">
-                <label class="filter-label">
-                    <svg class="icon"><use href="#i-search"/></svg> Поиск
-                </label>
-                <input type="text" name="search" value="@Model.SearchQuery" placeholder="Название или автор..." />
+            <div class="catalog-filters__head">
+                <h3><svg class="icon"><use href="#i-menu"/></svg> Фильтры</h3>
+                <a href="/catalog" class="link-reset">Сбросить</a>
             </div>
 
             <div class="filter-group">
@@ -60,7 +61,6 @@
             <button type="submit" class="btn btn-primary w-full">
                 <svg class="icon"><use href="#i-check"/></svg> Применить
             </button>
-            <a href="/catalog" class="btn btn-ghost w-full mt-1">Сбросить</a>
         </aside>
 
         <div class="catalog-results">
@@ -100,6 +100,7 @@
                     </nav>
                 }
             }
+        </div>
         </div>
     </form>
 </section>

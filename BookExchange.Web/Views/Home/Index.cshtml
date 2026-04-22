@@ -6,20 +6,24 @@
 
 <section class="hero">
     <div class="hero-inner">
-        <span class="eyebrow">Добро пожаловать в BookSwap</span>
-        <h1>Обменивайся <em>историями</em>, а не только книгами.</h1>
+        <span class="hero-eyebrow">
+            <svg class="icon"><use href="#i-sparkles"/></svg>
+            Новое поколение книжного обмена
+        </span>
+        <h1>Обменивайтесь книгами<br/><em>с единомышленниками</em></h1>
         <p>
-            Сообщество читателей, где твоя полка превращается в библиотеку друзей.
-            Предлагай книги на обмен, находи новые и знакомься с людьми, которые читают то, что любишь ты.
+            BookSwap — это сообщество любителей чтения.
+            Находите редкие издания, делитесь своими книгами
+            и открывайте новые миры через страницы историй.
         </p>
         <div class="hero-actions">
             <a asp-controller="Book" asp-action="Index" class="btn btn-primary btn-lg">
-                <svg class="icon"><use href="#i-search"/></svg> Открыть каталог
+                <svg class="icon"><use href="#i-search"/></svg> Найти книгу
             </a>
             @if (!SignInManager.IsSignedIn(User))
             {
                 <a asp-controller="Account" asp-action="Register" class="btn btn-outline btn-lg">
-                    Создать аккаунт <svg class="icon"><use href="#i-arrow-right"/></svg>
+                    Присоединиться <svg class="icon"><use href="#i-arrow-right"/></svg>
                 </a>
             }
             else
@@ -29,14 +33,53 @@
                 </a>
             }
         </div>
+        <div class="hero-metrics">
+            <div class="hero-metric">
+                <div class="hero-metric__value">1,200+</div>
+                <div class="hero-metric__label">книг в каталоге</div>
+            </div>
+            <div class="hero-metric">
+                <div class="hero-metric__value">450+</div>
+                <div class="hero-metric__label">активных читателей</div>
+            </div>
+            <div class="hero-metric">
+                <div class="hero-metric__value">890+</div>
+                <div class="hero-metric__label">успешных обменов</div>
+            </div>
+        </div>
     </div>
-    <div class="hero-stack" aria-hidden="true">
-        <span class="hero-stack__book"></span>
-        <span class="hero-stack__book"></span>
-        <span class="hero-stack__book"></span>
-        <span class="hero-stack__book"></span>
-        <span class="hero-stack__book"></span>
-        <span class="hero-stack__book"></span>
+</section>
+
+<section class="section">
+    <div class="features-grid">
+        <div class="feature-tile">
+            <div class="feature-tile__icon feature-tile__icon--green">
+                <svg class="icon"><use href="#i-book"/></svg>
+            </div>
+            <h3>Большой каталог</h3>
+            <p>Тысячи книг от читателей со всей страны — классика, новинки, редкие издания.</p>
+        </div>
+        <div class="feature-tile">
+            <div class="feature-tile__icon feature-tile__icon--orange">
+                <svg class="icon"><use href="#i-swap"/></svg>
+            </div>
+            <h3>Простой обмен</h3>
+            <p>Выбирайте книги, предлагайте свои — и договаривайтесь о встрече прямо в чате.</p>
+        </div>
+        <div class="feature-tile">
+            <div class="feature-tile__icon feature-tile__icon--lime">
+                <svg class="icon"><use href="#i-users"/></svg>
+            </div>
+            <h3>Сообщество</h3>
+            <p>Знакомьтесь с читателями, обсуждайте книги и находите новые литературные рекомендации.</p>
+        </div>
+        <div class="feature-tile">
+            <div class="feature-tile__icon feature-tile__icon--amber">
+                <svg class="icon"><use href="#i-sparkles"/></svg>
+            </div>
+            <h3>AI-помощник</h3>
+            <p>Умный помощник подберёт книги под ваши вкусы и расскажет, что почитать следующим.</p>
+        </div>
     </div>
 </section>
 
