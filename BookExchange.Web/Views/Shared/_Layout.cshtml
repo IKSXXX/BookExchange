@@ -10,15 +10,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@(ViewData["Title"] ?? "BookSwap") — BookSwap</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
 
     <header class="navbar">
-        <div class="container flex items-center justify-between py-4">
-            <a href="/" class="navbar-brand">📚 BookSwap</a>
-            <nav class="flex items-center gap-6 nav-links">
+        <div class="container">
+            <a href="/" class="navbar-brand">BookSwap</a>
+            <nav class="nav-links">
                 <a asp-controller="Home" asp-action="Index" class="nav-link">Главная</a>
                 <a asp-controller="Book" asp-action="Index" class="nav-link">Каталог</a>
                 @if (SignInManager.IsSignedIn(User))
@@ -26,44 +25,73 @@
                     <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser!.Id" class="nav-link">Профиль</a>
                     @if (isAdmin)
                     {
-                        <a asp-controller="Admin" asp-action="Index" class="nav-link" style="color: var(--orange);">Админка</a>
+                        <a asp-controller="Admin" asp-action="Index" class="nav-link">
+                            <span class="badge badge--admin">Админ</span>
+                        </a>
                     }
                     <form asp-controller="Account" asp-action="Logout" method="post" class="inline-form">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-exchange">Выйти (@currentUser!.UserName)</button>
+                        <button type="submit" class="btn btn-ghost btn-sm" title="Выйти">
+                            @currentUser!.UserName · выйти
+                        </button>
                     </form>
                 }
                 else
                 {
                     <a asp-controller="Account" asp-action="Login" class="nav-link">Войти</a>
-                    <a asp-controller="Account" asp-action="Register" class="btn btn-exchange">Регистрация</a>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm">Регистрация</a>
                 }
             </nav>
         </div>
     </header>
 
-    <main class="container" style="padding-top: 1rem;">
+    <main class="container fade-in">
         @if (TempData["Success"] is string ok)
         {
-            <div class="alert alert-success">@ok</div>
+            <div class="alert alert-success mt-4">@ok</div>
         }
         @if (TempData["Error"] is string err)
         {
-            <div class="alert alert-danger">@err</div>
+            <div class="alert alert-danger mt-4">@err</div>
         }
         @RenderBody()
     </main>
 
-    <footer class="bg-white text-center py-8 mt-12 text-muted">
+    <footer>
         <div class="container">
-            © @DateTime.Now.Year BookSwap — Обменивайся книгами с радостью!
-            &middot; <a href="/privacy">Условия</a>
-            &middot; <a href="mailto:info@bookswap.example">Контакты</a>
+            <div>
+                <h4>📚 BookSwap</h4>
+                <p class="text-sm" style="color: rgba(255,255,255,.65);">
+                    Платформа обмена книгами между читателями. Делись историями, находи новые.
+                </p>
+            </div>
+            <div>
+                <h4>Навигация</h4>
+                <a asp-controller="Home" asp-action="Index">Главная</a><br />
+                <a asp-controller="Book" asp-action="Index">Каталог</a><br />
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser!.Id">Мой профиль</a>
+                }
+            </div>
+            <div>
+                <h4>Помощь</h4>
+                <a asp-controller="Home" asp-action="Privacy">Условия</a><br />
+                <a href="mailto:info@bookswap.example">Контакты</a>
+            </div>
+            <div>
+                <h4>Сообщество</h4>
+                <p class="text-sm" style="color: rgba(255,255,255,.65);">
+                    Присоединяйся — уже сотни читателей обмениваются книгами каждый день.
+                </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © @DateTime.Now.Year BookSwap — Обменивайся книгами с радостью.
         </div>
     </footer>
 
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- SignalR-клиент берём из CDN, чтобы не тянуть npm. -->
+    <!-- SignalR клиент из CDN (для чата и обсуждений) -->
     <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
