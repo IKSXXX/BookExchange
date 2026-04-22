@@ -88,8 +88,9 @@
                     @if (isAdmin)
                     {
                         <a asp-controller="Admin" asp-action="Index"
-                           class="nav-link @(currentController == "Admin" ? "is-active" : "")">
-                            <span class="badge badge--admin">Админ</span>
+                           class="nav-link nav-link--admin @(currentController == "Admin" ? "is-active" : "")">
+                            <svg class="icon"><use href="#i-shield"/></svg>
+                            Админ-панель
                         </a>
                     }
                 }
