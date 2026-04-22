@@ -96,45 +96,21 @@
 
                 <div class="nav-cta">
                     <a asp-controller="Book" asp-action="Index" class="btn btn-outline btn-sm">
-                        <svg class="icon"><use href="#i-search"/></svg>
+                        <svg class="icon"><use href="#i-home"/></svg>
                         Найти книгу
                     </a>
                     @if (SignInManager.IsSignedIn(User))
                     {
-                        <div class="user-menu" id="userMenu">
-                            <button class="user-trigger" type="button" id="userTrigger">
-                                @if (!string.IsNullOrEmpty(currentUser!.AvatarPath))
-                                {
-                                    <img src="@currentUser.AvatarPath" class="user-avatar" alt="@currentUser.UserName" />
-                                }
-                                else
-                                {
-                                    <span class="user-avatar">@userInitial</span>
-                                }
-                                <svg class="icon user-caret"><use href="#i-chevron-down"/></svg>
+                        <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser!.Id" class="btn btn-primary btn-sm">
+                            <svg class="icon"><use href="#i-user"/></svg>
+                            Профиль
+                        </a>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="nav-logout">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-ghost btn-sm" title="Выйти">
+                                <svg class="icon"><use href="#i-logout"/></svg>
                             </button>
-                            <div class="user-dropdown">
-                                <div class="user-dropdown__header">
-                                    <div class="user-dropdown__name">@currentUser.UserName</div>
-                                    <div class="user-dropdown__email">@currentUser.Email</div>
-                                </div>
-                                <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser.Id">
-                                    <svg class="icon"><use href="#i-user"/></svg> Мой профиль
-                                </a>
-                                <a asp-controller="Account" asp-action="EditProfile">
-                                    <svg class="icon"><use href="#i-settings"/></svg> Настройки
-                                </a>
-                                <a asp-controller="Book" asp-action="Create">
-                                    <svg class="icon"><use href="#i-plus"/></svg> Добавить книгу
-                                </a>
-                                <form asp-controller="Account" asp-action="Logout" method="post">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="danger">
-                                        <svg class="icon"><use href="#i-logout"/></svg> Выйти
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+                        </form>
                     }
                     else
                     {
@@ -216,16 +192,6 @@
     <script>
         document.getElementById('navToggle')?.addEventListener('click', () => {
             document.getElementById('navLinks')?.classList.toggle('is-open');
-        });
-        const userMenu = document.getElementById('userMenu');
-        document.getElementById('userTrigger')?.addEventListener('click', e => {
-            e.stopPropagation();
-            userMenu?.classList.toggle('is-open');
-        });
-        document.addEventListener('click', e => {
-            if (userMenu && !userMenu.contains(e.target)) {
-                userMenu.classList.remove('is-open');
-            }
         });
         // tabs
         document.addEventListener('click', e => {

@@ -38,7 +38,15 @@
     --red-800: #991B1B;
 
     --purple-100: #F3E8FF;
+    --purple-500: #A855F7;
     --purple-600: #9333EA;
+    --purple-800: #6B21A8;
+
+    --primary: #030213;
+    --primary-hover: #1b1b2b;
+    --secondary: #ececf0;
+    --secondary-hover: #dfdfe5;
+    --input-bg: #f3f3f5;
 
     --bg: #FFFFFF;
     --surface: #FFFFFF;
@@ -294,10 +302,10 @@ main { display: block; }
     line-height: 1.25;
 }
 .btn-primary {
-    background: var(--blue-600);
+    background: var(--primary);
     color: #fff;
 }
-.btn-primary:hover { background: var(--blue-700); }
+.btn-primary:hover { background: var(--primary-hover); }
 .btn-outline {
     background: #fff;
     border-color: var(--gray-200);
