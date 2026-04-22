@@ -127,12 +127,16 @@
                             </a>
                             <div class="feature-info">
                                 <h3 class="mb-1">@Model.BookOfTheDay.Title</h3>
-                                <p class="text-muted mb-3">@Model.BookOfTheDay.Author</p>
+                                <p class="text-muted mb-2">@Model.BookOfTheDay.Author</p>
                                 @if (!string.IsNullOrEmpty(Model.BookOfTheDay.Genre))
                                 {
-                                    <span class="badge badge--blue mb-3">@Model.BookOfTheDay.Genre</span>
+                                    <div class="mb-3"><span class="badge badge--blue">@Model.BookOfTheDay.Genre</span></div>
                                 }
-                                <a asp-controller="Book" asp-action="Details" asp-route-id="@Model.BookOfTheDay.Id" class="btn btn-primary btn-sm">
+                                @if (!string.IsNullOrEmpty(Model.BookOfTheDay.Description))
+                                {
+                                    <p class="feature-desc">@Model.BookOfTheDay.Description</p>
+                                }
+                                <a asp-controller="Book" asp-action="Details" asp-route-id="@Model.BookOfTheDay.Id" class="btn btn-primary btn-sm feature-cta">
                                     Открыть
                                     <svg class="icon"><use href="#i-arrow-right"/></svg>
                                 </a>
