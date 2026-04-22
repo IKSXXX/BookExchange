@@ -41,86 +41,61 @@
 </section>
 
 <section class="section">
-    <div class="home-layout">
-        @* --- AI HELPER (LEFT STICKY) --- *@
-        <aside class="home-sidebar">
-            <div class="panel ai-panel">
-                <span class="eyebrow">AI-помощник</span>
-                <h2 class="ai-panel__title">
-                    <svg class="icon"><use href="#i-sparkles"/></svg>
-                    Что почитать?
-                </h2>
-                <p class="ai-panel__hint">
-                    Опиши настроение, жанр или сюжет — подберём из каталога.
-                </p>
-                <form id="aiForm" class="ai-panel__form">
-                    <input name="query" type="text" class="form-input" placeholder="фэнтези про магию…" required />
-                    <button type="submit" class="btn btn-primary w-full">
-                        <svg class="icon"><use href="#i-sparkles"/></svg> Подобрать
-                    </button>
-                </form>
-                <div id="aiResults" class="ai-panel__results"></div>
-                <div class="ai-panel__hint ai-panel__disclaimer">
-                    Заглушка: поиск идёт по ключевым словам.
+    <div class="home-features">
+        @* --- КНИГА ДНЯ --- *@
+        <div class="panel feature-card feature-card--day">
+            <span class="eyebrow">Книга дня</span>
+            <h2 class="section-title">
+                <svg class="icon"><use href="#i-bookmark"/></svg>
+                Сегодня рекомендуем
+            </h2>
+            @if (Model.BookOfTheDay != null)
+            {
+                <div class="book-of-day">
+                    <partial name="_BookCard" model="Model.BookOfTheDay" />
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="empty">
+                    <svg class="icon icon-xl"><use href="#i-bookmark"/></svg>
+                    <p>Сегодня админ ещё не выбрал книгу дня.</p>
+                </div>
+            }
+        </div>
 
-            <div class="panel ai-panel ai-panel--compact">
-                <span class="eyebrow">Мини-игра</span>
-                <h2 class="ai-panel__title">
-                    <svg class="icon"><use href="#i-sparkles"/></svg>
-                    Угадай по цитате
-                </h2>
-                <div id="quizWidget" data-initial='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.QuizQuestion))'>
-                    <p class="text-muted">Загрузка…</p>
-                </div>
-            </div>
-        </aside>
-
-        @* --- MAIN (RIGHT) --- *@
-        <div class="home-main">
-            <div class="panel">
-                <span class="eyebrow">Книга дня</span>
-                <h2 class="section-title">
-                    <svg class="icon"><use href="#i-bookmark"/></svg>
-                    Сегодня редакция рекомендует
-                </h2>
-                @if (Model.BookOfTheDay != null)
-                {
-                    <div class="book-of-day">
-                        <partial name="_BookCard" model="Model.BookOfTheDay" />
-                    </div>
-                }
-                else
-                {
-                    <div class="empty">
-                        <svg class="icon icon-xl"><use href="#i-bookmark"/></svg>
-                        <p>Сегодня админ ещё не выбрал книгу дня.</p>
-                    </div>
-                }
-            </div>
-
-            <div>
-                <div class="page-header page-header--slim">
-                    <div>
-                        <span class="eyebrow">Свежее поступление</span>
-                        <h2 class="section-title" style="margin: 0;">
-                            <svg class="icon"><use href="#i-sparkles"/></svg>
-                            Недавно добавленные
-                        </h2>
-                    </div>
-                    <a asp-controller="Book" asp-action="Index" class="btn btn-ghost btn-sm">
-                        Все книги <svg class="icon"><use href="#i-arrow-right"/></svg>
-                    </a>
-                </div>
-                <div class="catalog-grid">
-                    @foreach (var b in Model.RecentBooks)
-                    {
-                        <partial name="_BookCard" model="b" />
-                    }
-                </div>
+        @* --- МИНИ-ИГРА --- *@
+        <div class="panel feature-card feature-card--quiz">
+            <span class="eyebrow">Мини-игра</span>
+            <h2 class="section-title section-title--accent">
+                <svg class="icon"><use href="#i-sparkles"/></svg>
+                Угадай книгу по цитате
+            </h2>
+            <div id="quizWidget" data-initial='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.QuizQuestion))'>
+                <p class="text-muted">Загрузка…</p>
             </div>
         </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="page-header page-header--slim">
+        <div>
+            <span class="eyebrow">Свежее поступление</span>
+            <h2 class="section-title" style="margin: 0;">
+                <svg class="icon"><use href="#i-sparkles"/></svg>
+                Недавно добавленные
+            </h2>
+        </div>
+        <a asp-controller="Book" asp-action="Index" class="btn btn-ghost btn-sm">
+            Все книги <svg class="icon"><use href="#i-arrow-right"/></svg>
+        </a>
+    </div>
+    <div class="catalog-grid">
+        @foreach (var b in Model.RecentBooks)
+        {
+            <partial name="_BookCard" model="b" />
+        }
     </div>
 </section>
 
@@ -176,27 +151,5 @@
             }
             render(initial);
         })();
-
-        // AI form
-        document.getElementById('aiForm')?.addEventListener('submit', async e => {
-            e.preventDefault();
-            const fd = new FormData();
-            fd.append('query', e.target.query.value.trim());
-            const res = await fetch('/ai/recommend', { method: 'POST', body: fd });
-            const data = await res.json();
-            const books = data.books || [];
-            const box = document.getElementById('aiResults');
-            if (!books.length) { box.innerHTML = '<div class="ai-empty">Ничего не нашлось. Попробуй другие слова.</div>'; return; }
-            box.innerHTML = books.slice(0, 6).map(b => `
-                <a class="ai-result" href="/book/details/${b.id}">
-                    <div class="ai-result__cover">
-                        ${b.coverImagePath ? `<img src="${b.coverImagePath}" alt="${b.title}"/>` : '<span class="ai-result__placeholder">📖</span>'}
-                    </div>
-                    <div class="ai-result__body">
-                        <div class="ai-result__title">${b.title}</div>
-                        <div class="ai-result__author">${b.author}</div>
-                    </div>
-                </a>`).join('');
-        });
     </script>
 }

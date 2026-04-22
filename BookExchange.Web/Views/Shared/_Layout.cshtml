@@ -7,6 +7,10 @@
         ? currentUser.UserName.Substring(0, 1).ToUpper()
         : "?";
     var currentController = (string?)ViewContext.RouteData.Values["controller"] ?? "";
+    var currentAction = (string?)ViewContext.RouteData.Values["action"] ?? "";
+    var hideRail = ViewData["HideRail"] as bool? ?? false;
+    var isAuthPage = currentController == "Account" && (currentAction == "Login" || currentAction == "Register");
+    var showRail = !hideRail && !isAuthPage;
 }
 <!DOCTYPE html>
 <html lang="ru">
@@ -131,23 +135,55 @@
         </div>
     </header>
 
-    <main class="container fade-in">
-        @if (TempData["Success"] is string ok)
+    <div class="page-wrap @(showRail ? "page-wrap--with-rail" : "")">
+        @if (showRail)
         {
-            <div class="alert alert--success">
-                <svg class="icon"><use href="#i-check"/></svg>
-                <span>@ok</span>
-            </div>
+            <aside class="app-rail" id="appRail">
+                <div class="app-rail__inner">
+                    <div class="panel ai-panel">
+                        <span class="eyebrow">AI-помощник</span>
+                        <h2 class="ai-panel__title">
+                            <svg class="icon"><use href="#i-sparkles"/></svg>
+                            Что почитать?
+                        </h2>
+                        <p class="ai-panel__hint">
+                            Опиши настроение, жанр или сюжет — подберём из каталога.
+                        </p>
+                        <form id="railAiForm" class="ai-panel__form">
+                            <input name="query" type="text" class="form-input" placeholder="фэнтези про магию…" required />
+                            <button type="submit" class="btn btn-primary w-full">
+                                <svg class="icon"><use href="#i-sparkles"/></svg> Подобрать
+                            </button>
+                        </form>
+                        <div id="railAiResults" class="ai-panel__results"></div>
+                        <div class="ai-panel__disclaimer">
+                            Заглушка: поиск идёт по ключевым словам.
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            <button class="rail-toggle" id="railToggle" aria-label="AI-помощник" type="button">
+                <svg class="icon"><use href="#i-sparkles"/></svg>
+            </button>
         }
-        @if (TempData["Error"] is string err)
-        {
-            <div class="alert alert--danger">
-                <svg class="icon"><use href="#i-x"/></svg>
-                <span>@err</span>
-            </div>
-        }
-        @RenderBody()
-    </main>
+        <main class="container fade-in">
+            @if (TempData["Success"] is string ok)
+            {
+                <div class="alert alert--success">
+                    <svg class="icon"><use href="#i-check"/></svg>
+                    <span>@ok</span>
+                </div>
+            }
+            @if (TempData["Error"] is string err)
+            {
+                <div class="alert alert--danger">
+                    <svg class="icon"><use href="#i-x"/></svg>
+                    <span>@err</span>
+                </div>
+            }
+            @RenderBody()
+        </main>
+    </div>
 
     <footer>
         <div class="container">
@@ -213,6 +249,49 @@
             if (!container || !tab) return;
             container.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
             container.querySelectorAll('.tab-content').forEach(c => c.hidden = (c.id !== 'tab-' + tab));
+        });
+
+        // rail toggle (mobile drawer)
+        const rail = document.getElementById('appRail');
+        const railToggle = document.getElementById('railToggle');
+        railToggle?.addEventListener('click', () => {
+            rail?.classList.toggle('is-open');
+            document.body.classList.toggle('rail-open');
+        });
+        document.addEventListener('click', e => {
+            if (!rail || !rail.classList.contains('is-open')) return;
+            if (rail.contains(e.target) || railToggle?.contains(e.target)) return;
+            rail.classList.remove('is-open');
+            document.body.classList.remove('rail-open');
+        });
+
+        // rail AI form
+        document.getElementById('railAiForm')?.addEventListener('submit', async e => {
+            e.preventDefault();
+            const q = e.target.query.value.trim();
+            if (!q) return;
+            const fd = new FormData();
+            fd.append('query', q);
+            const box = document.getElementById('railAiResults');
+            box.innerHTML = '<div class="ai-empty">Ищу…</div>';
+            try {
+                const res = await fetch('/ai/recommend', { method: 'POST', body: fd });
+                const data = await res.json();
+                const books = data.books || [];
+                if (!books.length) { box.innerHTML = '<div class="ai-empty">Ничего не нашлось.</div>'; return; }
+                box.innerHTML = books.slice(0, 6).map(b => `
+                    <a class="ai-result" href="/book/details/${b.id}">
+                        <div class="ai-result__cover">
+                            ${b.coverImagePath ? `<img src="${b.coverImagePath}" alt="${b.title}"/>` : '<span class="ai-result__placeholder">📖</span>'}
+                        </div>
+                        <div class="ai-result__body">
+                            <div class="ai-result__title">${b.title}</div>
+                            <div class="ai-result__author">${b.author}</div>
+                        </div>
+                    </a>`).join('');
+            } catch {
+                box.innerHTML = '<div class="ai-empty">Ошибка запроса.</div>';
+            }
         });
     </script>
     <script src="~/js/site.js" asp-append-version="true"></script>
