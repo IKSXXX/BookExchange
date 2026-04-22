@@ -66,8 +66,8 @@
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / .08), 0 4px 6px -4px rgb(0 0 0 / .05);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / .1), 0 8px 10px -6px rgb(0 0 0 / .05);
 
-    --container: 1280px;
-    --pad-x: clamp(16px, 3vw, 32px);
+    --container: 1440px;
+    --pad-x: clamp(16px, 2.5vw, 28px);
 
     --dur: .18s;
     --ease: cubic-bezier(.4, 0, .2, 1);
@@ -559,16 +559,13 @@ input[type="radio"] {
 /* ---------- Book card ---------- */
 .book-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1.25rem;
 }
+@media (max-width: 1400px) { .book-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 @media (max-width: 1180px) { .book-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 900px)  { .book-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 600px)  { .book-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.book-grid--6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-@media (max-width: 1180px) { .book-grid--6 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (max-width: 900px)  { .book-grid--6 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 600px)  { .book-grid--6 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 .book-card {
     display: block;
@@ -652,10 +649,10 @@ input[type="radio"] {
 /* ---------- Catalog ---------- */
 .catalog-layout {
     display: flex;
-    gap: 1.5rem;
+    gap: 1.25rem;
     align-items: flex-start;
 }
-.catalog-layout > .catalog-side { flex: 0 0 280px; }
+.catalog-layout > .catalog-side { flex: 0 0 240px; }
 .catalog-layout > .catalog-results { flex: 1 1 0; min-width: 0; }
 @media (max-width: 1024px) {
     .catalog-layout { flex-direction: column; }
@@ -665,17 +662,10 @@ input[type="radio"] {
     position: sticky;
     top: 88px;
     align-self: flex-start;
-    max-height: calc(100vh - 104px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-right: 4px;
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-    scrollbar-width: thin;
 }
-.catalog-side::-webkit-scrollbar { width: 6px; }
-.catalog-side::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
 .catalog-pagination { margin-top: 2rem; }
 
 /* ---------- Home: Book of Day + Quiz pair ---------- */
@@ -769,22 +759,15 @@ input[type="radio"] {
     padding: 0 0 .5rem;
     margin-bottom: .25rem;
 }
-.filters-card { padding: 0 1.25rem 1.25rem; }
+.filters-card { padding: 1.25rem; }
 .filters-card h3 {
     display: flex;
     align-items: center;
     gap: .5rem;
+    margin: 0 0 1rem;
     font-size: .95rem;
-    position: sticky;
-    top: 0;
-    background: #fff;
-    margin: 0 -1.25rem 1rem;
-    padding: 1rem 1.25rem .75rem;
-    z-index: 2;
-    border-bottom: 1px solid var(--line);
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    color: var(--gray-900);
 }
-.ai-helper { flex-shrink: 0; }
 .filter-group + .filter-group { margin-top: 1rem; }
 
 .ai-helper {
