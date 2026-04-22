@@ -3,24 +3,55 @@
 
 <section class="section">
     <div class="panel" style="max-width: 720px; margin: 0 auto;">
-        <h1>Новый вопрос для игры</h1>
+        <div class="page-header" style="border: none; padding-bottom: 0;">
+            <div>
+                <a asp-action="Quiz" class="page-header__back">
+                    <svg class="icon"><use href="#i-arrow-left"/></svg> К списку
+                </a>
+                <span class="eyebrow">Викторина</span>
+                <h1>Новый вопрос</h1>
+            </div>
+        </div>
+
         <form asp-action="CreateQuiz" method="post">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="All" class="text-danger"></div>
 
             <div class="form-group">
                 <label asp-for="BookId">Книга</label>
-                <select asp-for="BookId" class="form-input">
+                <select asp-for="BookId">
                     @foreach (var b in Model.AvailableBooks) { <option value="@b.Id">@b.Title — @b.Author</option> }
                 </select>
             </div>
-            <div class="form-group"><label asp-for="Quote"></label><textarea asp-for="Quote" class="form-input" rows="2"></textarea></div>
-            <div class="form-group"><label asp-for="CorrectAnswer">Правильный ответ</label><input asp-for="CorrectAnswer" class="form-input" /></div>
-            <div class="form-group"><label asp-for="Option2">Вариант 2</label><input asp-for="Option2" class="form-input" /></div>
-            <div class="form-group"><label asp-for="Option3">Вариант 3</label><input asp-for="Option3" class="form-input" /></div>
-            <div class="form-group"><label asp-for="Option4">Вариант 4</label><input asp-for="Option4" class="form-input" /></div>
-            <button class="btn btn-primary">Сохранить</button>
-            <a asp-action="Quiz" class="btn btn-exchange">Отмена</a>
+            <div class="form-group">
+                <label asp-for="Quote">Цитата</label>
+                <textarea asp-for="Quote" rows="3" placeholder="Отрывок или цитата из книги..."></textarea>
+            </div>
+            <div class="form-group">
+                <label asp-for="CorrectAnswer">Правильный ответ</label>
+                <input asp-for="CorrectAnswer" />
+            </div>
+            <div class="flex gap-2 wrap">
+                <div class="form-group grow">
+                    <label asp-for="Option2">Вариант 2</label>
+                    <input asp-for="Option2" />
+                </div>
+                <div class="form-group grow">
+                    <label asp-for="Option3">Вариант 3</label>
+                    <input asp-for="Option3" />
+                </div>
+                <div class="form-group grow">
+                    <label asp-for="Option4">Вариант 4</label>
+                    <input asp-for="Option4" />
+                </div>
+            </div>
+
+            <div class="flex gap-2 mt-4">
+                <button class="btn btn-primary btn-lg">
+                    <svg class="icon"><use href="#i-check"/></svg> Сохранить
+                </button>
+                <a asp-action="Quiz" class="btn btn-ghost btn-lg">Отмена</a>
+            </div>
         </form>
     </div>
 </section>

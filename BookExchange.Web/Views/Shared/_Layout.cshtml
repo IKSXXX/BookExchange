@@ -3,6 +3,10 @@
 @{
     var currentUser = SignInManager.IsSignedIn(User) ? await UserManager.GetUserAsync(User) : null;
     var isAdmin = currentUser != null && await UserManager.IsInRoleAsync(currentUser, "Admin");
+    var userInitial = currentUser != null && !string.IsNullOrEmpty(currentUser.UserName)
+        ? currentUser.UserName.Substring(0, 1).ToUpper()
+        : "?";
+    var currentController = (string?)ViewContext.RouteData.Values["controller"] ?? "";
 }
 <!DOCTYPE html>
 <html lang="ru">
@@ -10,36 +14,118 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@(ViewData["Title"] ?? "BookSwap") — BookSwap</title>
+    <meta name="description" content="BookSwap — платформа для обмена книгами между читателями." />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
 
+    @* ---------- SVG sprite ---------- *@
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <defs>
+            <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4h10a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4V4z"/><path d="M4 16a4 4 0 0 1 4-4h10"/></symbol>
+            <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></symbol>
+            <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+            <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></symbol>
+            <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6l8-3z"/><path d="m9 12 2 2 4-4"/></symbol>
+            <symbol id="i-logout" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></symbol>
+            <symbol id="i-login" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M9 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H9"/></symbol>
+            <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+            <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></symbol>
+            <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></symbol>
+            <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 13 4 4 10-10"/></symbol>
+            <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+            <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1a5.5 5.5 0 0 0 0-7.9z"/></symbol>
+            <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></symbol>
+            <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 3.1 6.3 7 1-5 4.9 1.2 6.8L12 17.8l-6.3 3.3 1.2-6.8-5-4.9 7-1L12 2z"/></symbol>
+            <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"/></symbol>
+            <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+            <symbol id="i-swap" viewBox="0 0 24 24"><path d="m17 3 4 4-4 4"/><path d="M21 7H9a4 4 0 0 0-4 4"/><path d="m7 21-4-4 4-4"/><path d="M3 17h12a4 4 0 0 0 4-4"/></symbol>
+            <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M8 17V11"/><path d="M13 17V7"/><path d="M18 17V4"/></symbol>
+            <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M5 12H2M22 12h-3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/><path d="m12 8 1.4 2.6L16 12l-2.6 1.4L12 16l-1.4-2.6L8 12l2.6-1.4L12 8z"/></symbol>
+            <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+            <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></symbol>
+            <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+            <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></symbol>
+            <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></symbol>
+            <symbol id="i-location" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+            <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+            <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+        </defs>
+    </svg>
+
     <header class="navbar">
         <div class="container">
-            <a href="/" class="navbar-brand">BookSwap</a>
-            <nav class="nav-links">
-                <a asp-controller="Home" asp-action="Index" class="nav-link">Главная</a>
-                <a asp-controller="Book" asp-action="Index" class="nav-link">Каталог</a>
+            <a href="/" class="brand">
+                <span class="brand-mark"><svg class="icon"><use href="#i-book"/></svg></span>
+                <span class="brand-name">Book<span class="accent">Swap</span></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Меню">
+                <svg class="icon"><use href="#i-menu"/></svg>
+            </button>
+            <nav class="nav-links" id="navLinks">
+                <a asp-controller="Home" asp-action="Index"
+                   class="nav-link @(currentController == "Home" ? "is-active" : "")">
+                    <svg class="icon"><use href="#i-home"/></svg> Главная
+                </a>
+                <a asp-controller="Book" asp-action="Index"
+                   class="nav-link @(currentController == "Book" ? "is-active" : "")">
+                    <svg class="icon"><use href="#i-search"/></svg> Каталог
+                </a>
                 @if (SignInManager.IsSignedIn(User))
                 {
-                    <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser!.Id" class="nav-link">Профиль</a>
+                    <a asp-controller="Book" asp-action="Create" class="nav-link">
+                        <svg class="icon"><use href="#i-plus"/></svg> Добавить
+                    </a>
                     @if (isAdmin)
                     {
-                        <a asp-controller="Admin" asp-action="Index" class="nav-link">
+                        <a asp-controller="Admin" asp-action="Index"
+                           class="nav-link @(currentController == "Admin" ? "is-active" : "")">
+                            <svg class="icon"><use href="#i-shield"/></svg>
                             <span class="badge badge--admin">Админ</span>
                         </a>
                     }
-                    <form asp-controller="Account" asp-action="Logout" method="post" class="inline-form">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-ghost btn-sm" title="Выйти">
-                            @currentUser!.UserName · выйти
+
+                    <div class="user-menu" id="userMenu">
+                        <button class="user-trigger" type="button" id="userTrigger">
+                            @if (!string.IsNullOrEmpty(currentUser!.AvatarPath))
+                            {
+                                <img src="@currentUser.AvatarPath" class="user-avatar" alt="@currentUser.UserName" />
+                            }
+                            else
+                            {
+                                <span class="user-avatar">@userInitial</span>
+                            }
+                            <span>@currentUser.UserName</span>
+                            <svg class="icon user-caret"><use href="#i-chevron-down"/></svg>
                         </button>
-                    </form>
+                        <div class="user-dropdown">
+                            <div class="user-dropdown__header">
+                                <div class="user-dropdown__name">@currentUser.UserName</div>
+                                <div class="user-dropdown__email">@currentUser.Email</div>
+                            </div>
+                            <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser.Id">
+                                <svg class="icon"><use href="#i-user"/></svg> Мой профиль
+                            </a>
+                            <a asp-controller="Account" asp-action="EditProfile">
+                                <svg class="icon"><use href="#i-settings"/></svg> Настройки
+                            </a>
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="danger">
+                                    <svg class="icon"><use href="#i-logout"/></svg> Выйти
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 }
                 else
                 {
-                    <a asp-controller="Account" asp-action="Login" class="nav-link">Войти</a>
-                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm">Регистрация</a>
+                    <a asp-controller="Account" asp-action="Login" class="nav-link">
+                        <svg class="icon"><use href="#i-login"/></svg> Войти
+                    </a>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm">
+                        Регистрация
+                    </a>
                 }
             </nav>
         </div>
@@ -48,11 +134,17 @@
     <main class="container fade-in">
         @if (TempData["Success"] is string ok)
         {
-            <div class="alert alert-success mt-4">@ok</div>
+            <div class="alert alert--success">
+                <svg class="icon"><use href="#i-check"/></svg>
+                <span>@ok</span>
+            </div>
         }
         @if (TempData["Error"] is string err)
         {
-            <div class="alert alert-danger mt-4">@err</div>
+            <div class="alert alert--danger">
+                <svg class="icon"><use href="#i-x"/></svg>
+                <span>@err</span>
+            </div>
         }
         @RenderBody()
     </main>
@@ -60,17 +152,21 @@
     <footer>
         <div class="container">
             <div>
-                <h4>📚 BookSwap</h4>
-                <p class="text-sm" style="color: rgba(255,255,255,.65);">
+                <a href="/" class="brand">
+                    <span class="brand-mark"><svg class="icon"><use href="#i-book"/></svg></span>
+                    <span class="brand-name">Book<span class="accent">Swap</span></span>
+                </a>
+                <p class="text-sm" style="margin-top: 12px;">
                     Платформа обмена книгами между читателями. Делись историями, находи новые.
                 </p>
             </div>
             <div>
                 <h4>Навигация</h4>
                 <a asp-controller="Home" asp-action="Index">Главная</a><br />
-                <a asp-controller="Book" asp-action="Index">Каталог</a><br />
+                <a asp-controller="Book" asp-action="Index">Каталог</a>
                 @if (SignInManager.IsSignedIn(User))
                 {
+                    <br />
                     <a asp-controller="User" asp-action="Details" asp-route-id="@currentUser!.Id">Мой профиль</a>
                 }
             </div>
@@ -81,7 +177,7 @@
             </div>
             <div>
                 <h4>Сообщество</h4>
-                <p class="text-sm" style="color: rgba(255,255,255,.65);">
+                <p class="text-sm">
                     Присоединяйся — уже сотни читателей обмениваются книгами каждый день.
                 </p>
             </div>
@@ -91,8 +187,34 @@
         </div>
     </footer>
 
-    <!-- SignalR клиент из CDN (для чата и обсуждений) -->
     <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
+    <script>
+        // mobile nav toggle
+        document.getElementById('navToggle')?.addEventListener('click', () => {
+            document.getElementById('navLinks')?.classList.toggle('is-open');
+        });
+        // user dropdown
+        const userMenu = document.getElementById('userMenu');
+        document.getElementById('userTrigger')?.addEventListener('click', e => {
+            e.stopPropagation();
+            userMenu?.classList.toggle('is-open');
+        });
+        document.addEventListener('click', e => {
+            if (userMenu && !userMenu.contains(e.target)) {
+                userMenu.classList.remove('is-open');
+            }
+        });
+        // tabs
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.tab-btn');
+            if (!btn) return;
+            const tab = btn.dataset.tab;
+            const container = btn.closest('.tabs');
+            if (!container || !tab) return;
+            container.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+            container.querySelectorAll('.tab-content').forEach(c => c.hidden = (c.id !== 'tab-' + tab));
+        });
+    </script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

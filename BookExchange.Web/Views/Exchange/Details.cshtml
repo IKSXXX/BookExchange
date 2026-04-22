@@ -1,80 +1,168 @@
 @model ExchangeDetailsViewModel
-@{ ViewData["Title"] = $"Заявка #{Model.Id}"; }
+@{
+    ViewData["Title"] = $"Заявка #{Model.Id}";
+    var statusClass = Model.Status switch
+    {
+        ExchangeStatus.Pending => "status-pill--pending",
+        ExchangeStatus.Accepted => "status-pill--accepted",
+        ExchangeStatus.Completed => "status-pill--completed",
+        ExchangeStatus.Rejected => "status-pill--rejected",
+        ExchangeStatus.Cancelled => "status-pill--cancelled",
+        _ => "",
+    };
+}
 
 <section class="section">
-    <h1>Заявка на обмен #@Model.Id</h1>
-    <div class="chip">Статус: @Model.StatusLabel</div>
+    <div class="page-header">
+        <div>
+            <a href="javascript:history.back()" class="page-header__back">
+                <svg class="icon"><use href="#i-arrow-left"/></svg> Назад
+            </a>
+            <span class="eyebrow">Заявка #@Model.Id</span>
+            <h1>Обмен книгами</h1>
+        </div>
+        <span class="status-pill @statusClass">
+            <span class="status-pill__dot"></span>
+            @Model.StatusLabel
+        </span>
+    </div>
 
-    <div class="two-col" style="margin-top: 1.5rem;">
+    <div class="two-col">
         <div class="panel">
-            <h3>Участники</h3>
-            <div class="owner-card__row">
-                @if (!string.IsNullOrEmpty(Model.Sender.Avatar)) { <img src="@Model.Sender.Avatar" class="avatar" /> }
-                <div><strong>Отправитель:</strong> <a asp-controller="User" asp-action="Details" asp-route-id="@Model.Sender.Id">@Model.Sender.Name</a></div>
-            </div>
-            <div class="owner-card__row">
-                @if (!string.IsNullOrEmpty(Model.Receiver.Avatar)) { <img src="@Model.Receiver.Avatar" class="avatar" /> }
-                <div><strong>Получатель:</strong> <a asp-controller="User" asp-action="Details" asp-route-id="@Model.Receiver.Id">@Model.Receiver.Name</a></div>
+            <h4 style="font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--s-3);font-family:var(--ff-sans);">Участники</h4>
+            <div class="flex-col gap-2 mb-4">
+                <div class="owner-card__row">
+                    @if (!string.IsNullOrEmpty(Model.Sender.Avatar))
+                    {
+                        <img src="@Model.Sender.Avatar" class="avatar" alt="" />
+                    }
+                    else
+                    {
+                        <span class="avatar" style="display:grid;place-items:center;background:var(--forest-soft);color:var(--forest);font-weight:700;">@(Model.Sender.Name.Substring(0, 1).ToUpper())</span>
+                    }
+                    <div class="grow">
+                        <div class="text-muted text-xs" style="text-transform:uppercase;letter-spacing:.1em;">Отправитель</div>
+                        <a asp-controller="User" asp-action="Details" asp-route-id="@Model.Sender.Id" style="font-weight:600;color:var(--ink);">@Model.Sender.Name</a>
+                    </div>
+                </div>
+                <div class="owner-card__row">
+                    @if (!string.IsNullOrEmpty(Model.Receiver.Avatar))
+                    {
+                        <img src="@Model.Receiver.Avatar" class="avatar" alt="" />
+                    }
+                    else
+                    {
+                        <span class="avatar" style="display:grid;place-items:center;background:var(--terracotta-soft);color:var(--terracotta);font-weight:700;">@(Model.Receiver.Name.Substring(0, 1).ToUpper())</span>
+                    }
+                    <div class="grow">
+                        <div class="text-muted text-xs" style="text-transform:uppercase;letter-spacing:.1em;">Получатель</div>
+                        <a asp-controller="User" asp-action="Details" asp-route-id="@Model.Receiver.Id" style="font-weight:600;color:var(--ink);">@Model.Receiver.Name</a>
+                    </div>
+                </div>
             </div>
 
-            <h3 style="margin-top:1rem;">Книги</h3>
+            <h4 style="font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--s-3);font-family:var(--ff-sans);">Книги</h4>
             <div class="exchange-books">
                 <div>
-                    <strong>Предложена:</strong>
-                    @if (Model.BookOffered != null) { <partial name="_BookCard" model="Model.BookOffered" /> }
-                    else { <p class="text-muted">🎁 безвозмездно</p> }
+                    <strong>Предложена</strong>
+                    @if (Model.BookOffered != null)
+                    {
+                        <partial name="_BookCard" model="Model.BookOffered" />
+                    }
+                    else
+                    {
+                        <div class="panel text-center" style="padding: var(--s-5);">
+                            <svg class="icon icon-xl" style="color:var(--terracotta);margin-bottom:var(--s-2);"><use href="#i-heart"/></svg>
+                            <p class="text-muted text-sm">Безвозмездно</p>
+                        </div>
+                    }
                 </div>
                 <div>
-                    <strong>Запрошена:</strong>
+                    <strong>Запрошена</strong>
                     <partial name="_BookCard" model="Model.BookRequested" />
                 </div>
             </div>
 
-            <div class="exchange-actions" style="margin-top: 1rem;">
-                @if (Model.CanAccept)
-                {
-                    <form asp-action="Accept" method="post" class="inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><button class="btn btn-primary">✅ Принять</button></form>
-                }
-                @if (Model.CanReject)
-                {
-                    <form asp-action="Reject" method="post" class="inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><button class="btn btn-danger">Отклонить</button></form>
-                }
-                @if (Model.CanCancel)
-                {
-                    <form asp-action="Cancel" method="post" class="inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><button class="btn btn-exchange">Отменить</button></form>
-                }
-                @if (Model.CanComplete)
-                {
-                    <form asp-action="Complete" method="post" class="inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><button class="btn btn-primary">🤝 Завершить</button></form>
-                }
-                @if (Model.CanLeaveReview)
-                {
-                    <a asp-action="LeaveReview" asp-route-id="@Model.Id" class="btn btn-primary">⭐ Оставить отзыв</a>
-                }
-            </div>
+            @if (Model.CanAccept || Model.CanReject || Model.CanCancel || Model.CanComplete || Model.CanLeaveReview)
+            {
+                <div class="exchange-actions">
+                    @if (Model.CanAccept)
+                    {
+                        <form asp-action="Accept" method="post" class="inline-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button class="btn btn-primary"><svg class="icon"><use href="#i-check"/></svg> Принять</button>
+                        </form>
+                    }
+                    @if (Model.CanReject)
+                    {
+                        <form asp-action="Reject" method="post" class="inline-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button class="btn btn-danger"><svg class="icon"><use href="#i-x"/></svg> Отклонить</button>
+                        </form>
+                    }
+                    @if (Model.CanCancel)
+                    {
+                        <form asp-action="Cancel" method="post" class="inline-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button class="btn btn-ghost"><svg class="icon"><use href="#i-x"/></svg> Отменить</button>
+                        </form>
+                    }
+                    @if (Model.CanComplete)
+                    {
+                        <form asp-action="Complete" method="post" class="inline-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button class="btn btn-accent"><svg class="icon"><use href="#i-swap"/></svg> Завершить</button>
+                        </form>
+                    }
+                    @if (Model.CanLeaveReview)
+                    {
+                        <a asp-action="LeaveReview" asp-route-id="@Model.Id" class="btn btn-accent">
+                            <svg class="icon"><use href="#i-star"/></svg> Оставить отзыв
+                        </a>
+                    }
+                </div>
+            }
         </div>
 
-        <!-- ЧАТ -->
         <div class="panel chat-panel">
             <h3>Чат</h3>
             <div id="chatMessages" class="chat-messages"
                  data-exchange-id="@Model.Id"
                  data-current-user="@Model.CurrentUserId">
-                @foreach (var m in Model.Messages)
+                @if (Model.Messages.Count == 0)
                 {
-                    <div class="chat-message @(m.SenderId == Model.CurrentUserId ? "chat-message--own" : "")">
-                        @if (!string.IsNullOrEmpty(m.SenderAvatar)) { <img src="@m.SenderAvatar" class="avatar avatar-sm" /> }
-                        <div>
-                            <strong>@m.SenderName</strong>
-                            <div class="chat-text">@m.Text</div>
-                            <small class="text-muted">@m.SentAt.ToLocalTime():HH:mm dd.MM</small>
-                        </div>
+                    <div class="empty" style="margin:auto;border:none;background:transparent;">
+                        <svg class="icon icon-xl"><use href="#i-chat"/></svg>
+                        <p class="text-muted">Пока нет сообщений. Напиши первым!</p>
                     </div>
+                }
+                else
+                {
+                    foreach (var m in Model.Messages)
+                    {
+                        <div class="chat-message @(m.SenderId == Model.CurrentUserId ? "chat-message--own" : "")">
+                            @if (!string.IsNullOrEmpty(m.SenderAvatar))
+                            {
+                                <img src="@m.SenderAvatar" class="avatar avatar-sm" alt="" />
+                            }
+                            <div>
+                                <strong>@m.SenderName</strong>
+                                <div class="chat-text">@m.Text</div>
+                                <small>@m.SentAt.ToLocalTime().ToString("HH:mm · dd.MM")</small>
+                            </div>
+                        </div>
+                    }
                 }
             </div>
             <form id="chatForm" class="chat-form">
-                <input type="text" id="chatInput" class="form-input" placeholder="Введи сообщение..." maxlength="1000" />
-                <button type="submit" class="btn btn-primary">Отправить</button>
+                <input type="text" id="chatInput" placeholder="Введи сообщение..." maxlength="1000" autocomplete="off" />
+                <button type="submit" class="btn btn-primary btn-icon" aria-label="Отправить">
+                    <svg class="icon"><use href="#i-arrow-right"/></svg>
+                </button>
             </form>
         </div>
     </div>
@@ -83,19 +171,25 @@
 @section Scripts {
     <script>
         (async () => {
-            const exchangeId = parseInt(document.getElementById('chatMessages').dataset.exchangeId);
-            const currentUserId = document.getElementById('chatMessages').dataset.currentUser;
+            const box = document.getElementById('chatMessages');
+            const exchangeId = parseInt(box.dataset.exchangeId);
+            const currentUserId = box.dataset.currentUser;
+            box.scrollTop = box.scrollHeight;
+
             const conn = new signalR.HubConnectionBuilder().withUrl('/hubs/chat').withAutomaticReconnect().build();
 
             conn.on('ReceiveMessage', m => {
+                const empty = box.querySelector('.empty');
+                if (empty) empty.remove();
                 const el = document.createElement('div');
                 el.className = 'chat-message' + (m.senderId === currentUserId ? ' chat-message--own' : '');
-                const avatar = m.senderAvatar ? `<img src="${m.senderAvatar}" class="avatar avatar-sm" />` : '';
+                const avatar = m.senderAvatar ? `<img src="${m.senderAvatar}" class="avatar avatar-sm" alt=""/>` : '';
                 const d = new Date(m.sentAt);
-                el.innerHTML = `${avatar}<div><strong>${m.senderName}</strong><div class="chat-text"></div><small class="text-muted">${d.toLocaleTimeString().slice(0,5)} ${d.toLocaleDateString()}</small></div>`;
+                const time = d.toTimeString().slice(0,5) + ' · ' + d.toLocaleDateString();
+                el.innerHTML = `${avatar}<div><strong>${m.senderName}</strong><div class="chat-text"></div><small>${time}</small></div>`;
                 el.querySelector('.chat-text').textContent = m.text;
-                const box = document.getElementById('chatMessages');
-                box.appendChild(el); box.scrollTop = box.scrollHeight;
+                box.appendChild(el);
+                box.scrollTop = box.scrollHeight;
             });
 
             try {

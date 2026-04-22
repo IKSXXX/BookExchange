@@ -1,19 +1,26 @@
 @model BookCatalogViewModel
 @{
-    ViewData["Title"] = "Каталог книг";
+    ViewData["Title"] = "Каталог";
 }
 
 <section class="section">
-    <h1 class="section-title">Каталог книг</h1>
+    <div class="page-header">
+        <div>
+            <span class="eyebrow">Библиотека</span>
+            <h1>Каталог книг</h1>
+        </div>
+        <p class="text-muted text-sm">Всего: <strong>@Model.Pagination.TotalItems</strong> книг</p>
+    </div>
 
     <form id="catalogForm" method="get" class="catalog-layout">
-        <!-- Фильтры слева -->
         <aside class="catalog-filters">
             <h3>Фильтры</h3>
 
             <div class="filter-group">
-                <label class="filter-label">Поиск</label>
-                <input type="text" name="search" id="searchInput" value="@Model.SearchQuery" placeholder="Название или автор..." class="form-input" />
+                <label class="filter-label">
+                    <svg class="icon"><use href="#i-search"/></svg> Поиск
+                </label>
+                <input type="text" name="search" value="@Model.SearchQuery" placeholder="Название или автор..." />
             </div>
 
             <div class="filter-group">
@@ -41,30 +48,28 @@
             </div>
 
             <div class="filter-group">
-                <label class="checkbox-label">
+                <label class="checkbox-label" style="font-weight: 600; color: var(--ink);">
                     <input type="checkbox" name="onlyAvailable" value="true" @(Model.OnlyAvailable ? "checked" : null) />
                     Только доступные
                 </label>
             </div>
 
-            <!-- Скрытые поля для CSV-представления мультивыбора (их читает контроллер). -->
             <input type="hidden" name="genres" id="hiddenGenres" />
             <input type="hidden" name="conditions" id="hiddenConditions" />
 
-            <button type="submit" class="btn btn-primary w-full">Применить</button>
-            <a href="/catalog" class="btn btn-exchange w-full" style="margin-top: 0.5rem;">Сбросить</a>
+            <button type="submit" class="btn btn-primary w-full">
+                <svg class="icon"><use href="#i-check"/></svg> Применить
+            </button>
+            <a href="/catalog" class="btn btn-ghost w-full mt-1">Сбросить</a>
         </aside>
 
-        <!-- Список книг -->
         <div class="catalog-results">
-            <div class="catalog-results__meta">
-                Найдено книг: <strong>@Model.Pagination.TotalItems</strong>
-            </div>
-
             @if (Model.Books.Count == 0)
             {
-                <div class="panel text-center">
-                    <p>Ничего не найдено. Попробуй изменить фильтры.</p>
+                <div class="empty">
+                    <svg class="icon icon-xl"><use href="#i-search"/></svg>
+                    <h3>Ничего не найдено</h3>
+                    <p>Попробуй изменить фильтры или сбросить их полностью.</p>
                 </div>
             }
             else
@@ -76,17 +81,24 @@
                     }
                 </div>
 
-                <nav class="pagination">
-                    @if (Model.Pagination.HasPrev)
-                    {
-                        <a class="btn btn-exchange" href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = Model.Pagination.Page - 1 })">← Назад</a>
-                    }
-                    <span class="pagination-info">Страница @Model.Pagination.Page из @Model.Pagination.TotalPages</span>
-                    @if (Model.Pagination.HasNext)
-                    {
-                        <a class="btn btn-exchange" href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = Model.Pagination.Page + 1 })">Вперёд →</a>
-                    }
-                </nav>
+                @if (Model.Pagination.TotalPages > 1)
+                {
+                    <nav class="pagination">
+                        @if (Model.Pagination.HasPrev)
+                        {
+                            <a class="btn btn-outline btn-sm" href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = Model.Pagination.Page - 1 })">
+                                <svg class="icon"><use href="#i-arrow-left"/></svg> Назад
+                            </a>
+                        }
+                        <span class="pagination-info">Страница @Model.Pagination.Page из @Model.Pagination.TotalPages</span>
+                        @if (Model.Pagination.HasNext)
+                        {
+                            <a class="btn btn-outline btn-sm" href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = Model.Pagination.Page + 1 })">
+                                Вперёд <svg class="icon"><use href="#i-arrow-right"/></svg>
+                            </a>
+                        }
+                    </nav>
+                }
             }
         </div>
     </form>
@@ -94,24 +106,13 @@
 
 @section Scripts {
     <script>
-        // При сабмите формы преобразуем массив чекбоксов в CSV-строку для одного параметра
-        // (так проще ссылаться на URL и пагинация).
         document.getElementById('catalogForm').addEventListener('submit', e => {
             const genres = [...document.querySelectorAll('input[name="genresArr"]:checked')].map(c => c.value).join(',');
             const conditions = [...document.querySelectorAll('input[name="conditionsArr"]:checked')].map(c => c.value).join(',');
             document.getElementById('hiddenGenres').value = genres;
             document.getElementById('hiddenConditions').value = conditions;
-
-            // Убираем временные массив-поля, чтобы не попадали в query-string.
             document.querySelectorAll('input[name="genresArr"]').forEach(c => c.removeAttribute('name'));
             document.querySelectorAll('input[name="conditionsArr"]').forEach(c => c.removeAttribute('name'));
-        });
-
-        // Debounce для поиска: через 500 мс после окончания ввода автоматически сабмитим форму.
-        let t;
-        document.getElementById('searchInput').addEventListener('input', () => {
-            clearTimeout(t);
-            t = setTimeout(() => document.getElementById('catalogForm').requestSubmit(), 500);
         });
     </script>
 }

@@ -1,8 +1,17 @@
 @{ ViewData["Title"] = "Доступ запрещён"; }
+
 <section class="section">
-    <div class="panel text-center">
-        <h1>🚫 Доступ запрещён</h1>
-        <p>У тебя нет прав на просмотр этой страницы.</p>
-        <a href="/" class="btn btn-primary">На главную</a>
+    <div class="panel text-center" style="max-width: 540px; margin: 0 auto; padding: var(--s-8);">
+        <svg class="icon icon-xl" style="color: var(--terracotta); width: 64px; height: 64px;"><use href="#i-shield"/></svg>
+        <h1 style="margin-top: var(--s-3);">Доступ запрещён</h1>
+        <p class="text-muted">У тебя нет прав на просмотр этой страницы. Войди под другим аккаунтом или вернись на главную.</p>
+        <div class="flex gap-2 justify-center mt-4">
+            <a href="/" class="btn btn-primary">
+                <svg class="icon"><use href="#i-home"/></svg> На главную
+            </a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-outline">
+                <svg class="icon"><use href="#i-login"/></svg> Войти
+            </a>
+        </div>
     </div>
 </section>

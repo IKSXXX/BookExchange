@@ -5,8 +5,13 @@
 }
 
 <section class="section">
-    <div class="panel" style="max-width: 720px; margin: 0 auto;">
-        <h1>@ViewData["Title"]</h1>
+    <div class="panel" style="max-width: 760px; margin: 0 auto;">
+        <div class="page-header" style="border: none; padding-bottom: 0; margin-bottom: var(--s-5);">
+            <div>
+                <span class="eyebrow">@(isEdit ? "Редактирование" : "Новая книга")</span>
+                <h1>@ViewData["Title"]</h1>
+            </div>
+        </div>
 
         <form asp-action="@(isEdit ? "Edit" : "Create")" asp-controller="Book" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
@@ -15,42 +20,45 @@
 
             <div class="form-group">
                 <label asp-for="Title">Название</label>
-                <input asp-for="Title" class="form-input" />
+                <input asp-for="Title" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Author">Автор</label>
-                <input asp-for="Author" class="form-input" />
+                <input asp-for="Author" />
                 <span asp-validation-for="Author" class="text-danger"></span>
             </div>
 
-            <div class="flex gap-2">
-                <div class="form-group" style="flex:1;">
+            <div class="flex gap-2 items-end">
+                <div class="form-group grow">
                     <label asp-for="ISBN">ISBN <small class="text-muted">(опционально)</small></label>
-                    <input asp-for="ISBN" id="isbnInput" class="form-input" />
+                    <input asp-for="ISBN" id="isbnInput" />
                 </div>
-                <div class="form-group" style="align-self: flex-end;">
-                    <button type="button" id="fetchIsbnBtn" class="btn btn-exchange">Автозаполнить по ISBN</button>
+                <div class="form-group">
+                    <button type="button" id="fetchIsbnBtn" class="btn btn-outline">
+                        <svg class="icon"><use href="#i-sparkles"/></svg> Автозаполнить
+                    </button>
                 </div>
             </div>
 
             <div class="form-group">
                 <label asp-for="Description">Описание</label>
-                <textarea asp-for="Description" class="form-input" rows="4"></textarea>
+                <textarea asp-for="Description" rows="5"></textarea>
             </div>
-            <div class="flex gap-2">
-                <div class="form-group" style="flex:1;">
+
+            <div class="flex gap-2 wrap">
+                <div class="form-group grow">
                     <label asp-for="Genre">Жанр</label>
-                    <input asp-for="Genre" class="form-input" list="genresList" />
+                    <input asp-for="Genre" list="genresList" />
                     <datalist id="genresList">
                         <option>Классика</option><option>Фэнтези</option><option>Детектив</option>
                         <option>Антиутопия</option><option>Научная фантастика</option><option>Магический реализм</option>
                         <option>Биография</option><option>Нон-фикшн</option><option>Другое</option>
                     </datalist>
                 </div>
-                <div class="form-group" style="flex:1;">
+                <div class="form-group grow">
                     <label asp-for="Condition">Состояние</label>
-                    <select asp-for="Condition" class="form-input">
+                    <select asp-for="Condition">
                         @foreach (var c in Enum.GetValues<BookCondition>())
                         {
                             <option value="@c">@MappingProfile.ConditionToLabel(c)</option>
@@ -58,26 +66,37 @@
                     </select>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <div class="form-group" style="flex:1;">
+
+            <div class="flex gap-2 wrap">
+                <div class="form-group grow">
                     <label asp-for="Year">Год</label>
-                    <input asp-for="Year" class="form-input" type="number" />
+                    <input asp-for="Year" type="number" />
                 </div>
-                <div class="form-group" style="flex:1;">
+                <div class="form-group grow">
                     <label asp-for="Language">Язык</label>
-                    <input asp-for="Language" class="form-input" />
+                    <input asp-for="Language" />
                 </div>
             </div>
+
             <div class="form-group">
-                <label asp-for="CoverImage">Обложка (jpg/png, до 5 МБ)</label>
-                <input asp-for="CoverImage" type="file" accept="image/*" class="form-input" />
+                <label asp-for="CoverImage">Обложка <small class="text-muted">(jpg / png, до 5 МБ)</small></label>
+                <input asp-for="CoverImage" type="file" accept="image/*" />
                 @if (!string.IsNullOrEmpty(Model.ExistingCoverPath))
                 {
-                    <p class="text-muted">Текущая: <img src="@Model.ExistingCoverPath" style="height:80px;vertical-align:middle;" /></p>
+                    <div class="flex items-center gap-2 mt-2">
+                        <img src="@Model.ExistingCoverPath" alt="" style="height:80px;border-radius:8px;" />
+                        <span class="text-muted text-sm">Текущая обложка</span>
+                    </div>
                 }
             </div>
 
-            <button type="submit" class="btn btn-primary">@(isEdit ? "Сохранить" : "Добавить")</button>
+            <div class="flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <svg class="icon"><use href="#i-check"/></svg>
+                    @(isEdit ? "Сохранить" : "Добавить")
+                </button>
+                <a asp-controller="Book" asp-action="Index" class="btn btn-ghost btn-lg">Отмена</a>
+            </div>
         </form>
     </div>
 </section>

@@ -1,37 +1,57 @@
 @model RegisterViewModel
 @{ ViewData["Title"] = "Регистрация"; }
 
-<section class="section">
-    <div class="panel" style="max-width: 480px; margin: 2rem auto;">
-        <h1>Регистрация</h1>
-        <form asp-action="Register" method="post">
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="All" class="text-danger"></div>
+<section class="auth-wrap">
+    <aside class="auth-art">
+        <div class="auth-art__content">
+            <div class="auth-art__mark">
+                <svg class="icon icon-xl"><use href="#i-sparkles"/></svg>
+            </div>
+            <h2>Добавь первую страницу</h2>
+            <p>Создай аккаунт, собери свою полку, делись книгами и находи единомышленников.</p>
+        </div>
+        <div class="auth-art__glow"></div>
+    </aside>
 
-            <div class="form-group">
-                <label asp-for="UserName"></label>
-                <input asp-for="UserName" class="form-input" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" class="form-input" type="email" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password">Пароль</label>
-                <input asp-for="Password" class="form-input" type="password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ConfirmPassword"></label>
-                <input asp-for="ConfirmPassword" class="form-input" type="password" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-            <button class="btn btn-primary w-full">Зарегистрироваться</button>
-        </form>
-        <p class="text-muted text-center" style="margin-top:1rem;">
-            Уже есть аккаунт? <a asp-action="Login">Войти</a>
-        </p>
+    <div class="auth-form">
+        <div class="auth-form__inner">
+            <span class="eyebrow">Новый читатель</span>
+            <h1>Регистрация</h1>
+            <p class="text-muted mb-4">Присоединяйся к сообществу BookSwap.</p>
+
+            <form asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label asp-for="UserName">Имя пользователя</label>
+                    <input asp-for="UserName" autocomplete="username" />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email">Email</label>
+                    <input asp-for="Email" type="email" autocomplete="email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password">Пароль</label>
+                    <input asp-for="Password" type="password" autocomplete="new-password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword">Подтверждение пароля</label>
+                    <input asp-for="ConfirmPassword" type="password" autocomplete="new-password" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <button class="btn btn-primary btn-lg w-full mt-3">
+                    <svg class="icon"><use href="#i-sparkles"/></svg> Создать аккаунт
+                </button>
+            </form>
+
+            <p class="text-center text-muted mt-4">
+                Уже есть аккаунт? <a asp-action="Login">Войти</a>
+            </p>
+        </div>
     </div>
 </section>

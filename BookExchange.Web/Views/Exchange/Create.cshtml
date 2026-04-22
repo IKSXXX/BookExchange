@@ -2,11 +2,21 @@
 @{ ViewData["Title"] = "Предложить обмен"; }
 
 <section class="section">
-    <h1>Предложить обмен</h1>
+    <div class="page-header">
+        <div>
+            <a asp-controller="Book" asp-action="Details" asp-route-id="@Model.BookRequestedId" class="page-header__back">
+                <svg class="icon"><use href="#i-arrow-left"/></svg> К книге
+            </a>
+            <span class="eyebrow">Обмен</span>
+            <h1>Предложить обмен</h1>
+        </div>
+    </div>
 
     <div class="two-col">
         <div class="panel">
-            <h3>Хочу получить</h3>
+            <h3 style="font-family:var(--ff-sans);font-size:.85rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--s-4);">
+                <svg class="icon" style="color:var(--terracotta);"><use href="#i-bookmark"/></svg> Хочу получить
+            </h3>
             @if (Model.BookRequested != null)
             {
                 <partial name="_BookCard" model="Model.BookRequested" />
@@ -14,29 +24,42 @@
         </div>
 
         <div class="panel">
-            <h3>Предлагаю отдать</h3>
+            <h3 style="font-family:var(--ff-sans);font-size:.85rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:var(--s-4);">
+                <svg class="icon" style="color:var(--forest);"><use href="#i-swap"/></svg> Предлагаю отдать
+            </h3>
             <form asp-action="Create" asp-route-bookId="@Model.BookRequestedId" method="post">
                 @Html.AntiForgeryToken()
 
                 <label class="radio-row">
                     <input type="radio" name="selectedOfferedBookId" value="" checked />
-                    <span>🎁 Отдать безвозмездно (ничего не предлагаю взамен)</span>
+                    <div>
+                        <strong>Безвозмездно</strong>
+                        <div class="text-muted text-sm">Отдаю книгу в дар — ничего не предлагаю взамен.</div>
+                    </div>
                 </label>
 
                 @foreach (var b in Model.MyAvailableBooks)
                 {
                     <label class="radio-row">
                         <input type="radio" name="selectedOfferedBookId" value="@b.Id" />
-                        <span>@b.Title — <em>@b.Author</em> (@b.ConditionLabel)</span>
+                        <div>
+                            <strong>@b.Title</strong>
+                            <div class="text-muted text-sm">@b.Author · @b.ConditionLabel</div>
+                        </div>
                     </label>
                 }
 
                 @if (Model.MyAvailableBooks.Count == 0)
                 {
-                    <p class="text-muted">У тебя нет доступных книг. <a asp-controller="Book" asp-action="Create">Добавь</a> книгу, чтобы предложить обмен, или отправь запрос безвозмездно.</p>
+                    <div class="alert alert--info">
+                        <svg class="icon"><use href="#i-sparkles"/></svg>
+                        <span>У тебя нет доступных книг. <a asp-controller="Book" asp-action="Create">Добавь книгу</a> или отправь заявку безвозмездно.</span>
+                    </div>
                 }
 
-                <button class="btn btn-primary" style="margin-top: 1rem;">Отправить заявку</button>
+                <button class="btn btn-primary btn-lg w-full mt-3">
+                    <svg class="icon"><use href="#i-swap"/></svg> Отправить заявку
+                </button>
             </form>
         </div>
     </div>

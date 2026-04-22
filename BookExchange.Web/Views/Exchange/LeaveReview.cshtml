@@ -2,8 +2,14 @@
 @{ ViewData["Title"] = "Оставить отзыв"; }
 
 <section class="section">
-    <div class="panel" style="max-width: 600px; margin: 2rem auto;">
-        <h1>Отзыв о пользователе @Model.ToUserName</h1>
+    <div class="panel" style="max-width: 640px; margin: 0 auto;">
+        <div class="page-header" style="border: none; padding-bottom: 0;">
+            <div>
+                <span class="eyebrow">Отзыв</span>
+                <h1>Об обмене с @Model.ToUserName</h1>
+            </div>
+        </div>
+
         <form asp-action="LeaveReview" method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="ExchangeRequestId" />
@@ -12,16 +18,24 @@
 
             <div class="form-group">
                 <label asp-for="Rating">Оценка</label>
-                <select asp-for="Rating" class="form-input">
-                    @for (int i = 5; i >= 1; i--) { <option value="@i">@(new string('★', i))@(new string('☆', 5-i)) (@i)</option> }
+                <select asp-for="Rating">
+                    @for (int i = 5; i >= 1; i--)
+                    {
+                        <option value="@i">@(new string('★', i))@(new string('☆', 5-i)) — @i из 5</option>
+                    }
                 </select>
             </div>
             <div class="form-group">
-                <label asp-for="Comment"></label>
-                <textarea asp-for="Comment" class="form-input" rows="4"></textarea>
+                <label asp-for="Comment">Комментарий</label>
+                <textarea asp-for="Comment" rows="5" placeholder="Как прошёл обмен? Что понравилось?"></textarea>
             </div>
-            <button class="btn btn-primary">Отправить</button>
-            <a asp-action="Details" asp-route-id="@Model.ExchangeRequestId" class="btn btn-exchange">Отмена</a>
+
+            <div class="flex gap-2">
+                <button class="btn btn-primary btn-lg">
+                    <svg class="icon"><use href="#i-check"/></svg> Отправить
+                </button>
+                <a asp-action="Details" asp-route-id="@Model.ExchangeRequestId" class="btn btn-ghost btn-lg">Отмена</a>
+            </div>
         </form>
     </div>
 </section>

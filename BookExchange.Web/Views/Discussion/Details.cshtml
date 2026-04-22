@@ -3,35 +3,64 @@
 @{ ViewData["Title"] = Model.Title; }
 
 <section class="section">
-    <a asp-controller="Book" asp-action="Details" asp-route-id="@Model.BookId" class="btn btn-exchange">← К книге «@Model.BookTitle»</a>
-    <h1 style="margin-top: 1rem;">@Model.Title</h1>
-    <div class="text-muted">Автор темы: @Model.AuthorName</div>
+    <div class="page-header">
+        <div>
+            <a asp-controller="Book" asp-action="Details" asp-route-id="@Model.BookId" class="page-header__back">
+                <svg class="icon"><use href="#i-arrow-left"/></svg> К книге «@Model.BookTitle»
+            </a>
+            <span class="eyebrow">Обсуждение</span>
+            <h1>@Model.Title</h1>
+            <p class="text-muted text-sm">Автор темы: @Model.AuthorName</p>
+        </div>
+    </div>
 
-    <div class="panel chat-panel" style="margin-top: 1.5rem;">
+    <div class="panel chat-panel" style="max-height: 720px;">
         <div id="discMessages" class="chat-messages" data-discussion-id="@Model.Id">
-            @foreach (var m in Model.Messages)
+            @if (Model.Messages.Count == 0)
             {
-                <div class="chat-message">
-                    @if (!string.IsNullOrEmpty(m.AvatarPath)) { <img src="@m.AvatarPath" class="avatar avatar-sm" /> }
-                    <div>
-                        <strong>@m.UserName</strong>
-                        <div class="chat-text">@m.Text</div>
-                        <small class="text-muted">@m.CreatedAt.ToLocalTime():HH:mm dd.MM</small>
-                    </div>
+                <div class="empty" style="border:none;background:transparent;margin:auto;">
+                    <svg class="icon icon-xl"><use href="#i-chat"/></svg>
+                    <p class="text-muted">Пока тихо. Напиши первое сообщение!</p>
                 </div>
+            }
+            else
+            {
+                foreach (var m in Model.Messages)
+                {
+                    <div class="chat-message">
+                        @if (!string.IsNullOrEmpty(m.AvatarPath))
+                        {
+                            <img src="@m.AvatarPath" class="avatar avatar-sm" alt="" />
+                        }
+                        else
+                        {
+                            <span class="avatar avatar-sm" style="display:grid;place-items:center;background:var(--forest-soft);color:var(--forest);font-weight:700;font-size:.8rem;">@(m.UserName.Substring(0, 1).ToUpper())</span>
+                        }
+                        <div>
+                            <strong>@m.UserName</strong>
+                            <div class="chat-text">@m.Text</div>
+                            <small>@m.CreatedAt.ToLocalTime().ToString("HH:mm · dd.MM")</small>
+                        </div>
+                    </div>
+                }
             }
         </div>
 
         @if (SignInManager.IsSignedIn(User))
         {
             <form id="discForm" class="chat-form">
-                <input type="text" id="discInput" class="form-input" placeholder="Напиши ответ..." maxlength="1000" />
-                <button type="submit" class="btn btn-primary">Отправить</button>
+                <input type="text" id="discInput" placeholder="Напиши ответ..." maxlength="1000" autocomplete="off" />
+                <button type="submit" class="btn btn-primary btn-icon" aria-label="Отправить">
+                    <svg class="icon"><use href="#i-arrow-right"/></svg>
+                </button>
             </form>
         }
         else
         {
-            <p class="text-muted">Чтобы писать в тему, <a asp-controller="Account" asp-action="Login">войди</a>.</p>
+            <div class="alert alert--info">
+                <svg class="icon"><use href="#i-login"/></svg>
+                <span>Чтобы писать в тему, <a asp-controller="Account" asp-action="Login">войди в аккаунт</a>.</span>
+            </div>
         }
     </div>
 </section>
@@ -41,13 +70,20 @@
         (async () => {
             const box = document.getElementById('discMessages');
             const discId = parseInt(box.dataset.discussionId);
+            box.scrollTop = box.scrollHeight;
+
             const conn = new signalR.HubConnectionBuilder().withUrl('/hubs/discussion').withAutomaticReconnect().build();
             conn.on('ReceiveMessage', m => {
+                const empty = box.querySelector('.empty');
+                if (empty) empty.remove();
                 const el = document.createElement('div');
                 el.className = 'chat-message';
-                const avatar = m.avatarPath ? `<img src="${m.avatarPath}" class="avatar avatar-sm" />` : '';
+                const avatar = m.avatarPath
+                    ? `<img src="${m.avatarPath}" class="avatar avatar-sm" alt=""/>`
+                    : `<span class="avatar avatar-sm" style="display:grid;place-items:center;background:var(--forest-soft);color:var(--forest);font-weight:700;font-size:.8rem;">${m.userName.charAt(0).toUpperCase()}</span>`;
                 const d = new Date(m.createdAt);
-                el.innerHTML = `${avatar}<div><strong>${m.userName}</strong><div class="chat-text"></div><small class="text-muted">${d.toLocaleTimeString().slice(0,5)} ${d.toLocaleDateString()}</small></div>`;
+                const time = d.toTimeString().slice(0,5) + ' · ' + d.toLocaleDateString();
+                el.innerHTML = `${avatar}<div><strong>${m.userName}</strong><div class="chat-text"></div><small>${time}</small></div>`;
                 el.querySelector('.chat-text').textContent = m.text;
                 box.appendChild(el); box.scrollTop = box.scrollHeight;
             });
