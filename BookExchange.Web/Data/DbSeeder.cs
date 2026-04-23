@@ -189,5 +189,18 @@ public static class DbSeeder
                 ctx.Books.Add(b);
         }
         await ctx.SaveChangesAsync();
+
+        // Идемпотентно гарантируем наличие Книги дня на сегодняшнюю дату,
+        // иначе карточка «Книга дня» исчезает с главной после смены суток.
+        var today = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Utc);
+        if (!await ctx.BooksOfTheDay.AnyAsync(b => b.Date == today))
+        {
+            var anyBook = await ctx.Books.Where(b => !b.IsHidden).OrderBy(b => b.Id).FirstOrDefaultAsync();
+            if (anyBook != null)
+            {
+                ctx.BooksOfTheDay.Add(new BookOfTheDay { BookId = anyBook.Id, Date = today });
+                await ctx.SaveChangesAsync();
+            }
+        }
     }
 }
