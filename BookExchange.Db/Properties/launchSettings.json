@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "BookExchange.Db": {
+      "commandName": "Project"
+    }
+  }
+}
