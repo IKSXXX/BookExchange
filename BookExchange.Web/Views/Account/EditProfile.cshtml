@@ -1,41 +1,72 @@
 @model EditProfileViewModel
 @{ ViewData["Title"] = "Редактирование профиля"; }
 
-<section class="section">
-    <div class="panel" style="max-width: 600px; margin: 2rem auto;">
-        <h1>Редактировать профиль</h1>
-        <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="All" class="text-danger"></div>
+<div class="section--gray" style="padding:2rem 0; min-height:calc(100vh - 64px);">
+    <div class="container">
+        <a asp-action="Profile" class="btn btn-ghost btn-sm mb-6">
+            <svg class="icon"><use href="#i-arrow-left"/></svg>
+            К профилю
+        </a>
 
-            <div class="form-group">
-                <label asp-for="UserName"></label>
-                <input asp-for="UserName" class="form-input" />
+        <div class="form-wrap">
+            <div class="mb-6">
+                <h1 class="mb-2">Настройки профиля</h1>
+                <p class="text-muted">Обновите имя, город или аватар.</p>
             </div>
-            <div class="form-group">
-                <label asp-for="Location"></label>
-                <input asp-for="Location" class="form-input" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Avatar"></label>
-                <input asp-for="Avatar" type="file" accept="image/*" class="form-input" />
-                @if (!string.IsNullOrEmpty(Model.ExistingAvatarPath))
-                {
-                    <img src="@Model.ExistingAvatarPath" class="avatar" style="margin-top:.5rem;" />
-                }
-            </div>
-            <hr />
-            <h3>Смена пароля (необязательно)</h3>
-            <div class="form-group">
-                <label asp-for="CurrentPassword"></label>
-                <input asp-for="CurrentPassword" type="password" class="form-input" />
-            </div>
-            <div class="form-group">
-                <label asp-for="NewPassword"></label>
-                <input asp-for="NewPassword" type="password" class="form-input" />
-            </div>
-            <button class="btn btn-primary">Сохранить</button>
-            <a asp-action="Profile" class="btn btn-exchange">Отмена</a>
-        </form>
+
+            <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="All" class="text-danger text-sm mb-2"></div>
+
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">Профиль</h3></div>
+                    <div class="card-body stack">
+                        <div class="form-group">
+                            <label asp-for="UserName" class="form-label">Имя пользователя</label>
+                            <input asp-for="UserName" class="form-input" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Location" class="form-label">Город</label>
+                            <input asp-for="Location" class="form-input" placeholder="Москва, Санкт-Петербург..." />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Avatar" class="form-label">Аватар</label>
+                            <input asp-for="Avatar" type="file" accept="image/*" class="form-input" />
+                            @if (!string.IsNullOrEmpty(Model.ExistingAvatarPath))
+                            {
+                                <div class="flex items-center gap-2 mt-3">
+                                    <img src="@Model.ExistingAvatarPath" alt="" class="profile-avatar" style="width:56px;height:56px;" />
+                                    <span class="text-muted text-sm">Текущий аватар</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Смена пароля <span class="text-muted text-xs">(необязательно)</span></h3>
+                    </div>
+                    <div class="card-body stack">
+                        <div class="form-group">
+                            <label asp-for="CurrentPassword" class="form-label">Текущий пароль</label>
+                            <input asp-for="CurrentPassword" type="password" autocomplete="current-password" class="form-input" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewPassword" class="form-label">Новый пароль</label>
+                            <input asp-for="NewPassword" type="password" autocomplete="new-password" class="form-input" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mt-6">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <svg class="icon"><use href="#i-check"/></svg>
+                        Сохранить
+                    </button>
+                    <a asp-action="Profile" class="btn btn-outline btn-lg">Отмена</a>
+                </div>
+            </form>
+        </div>
     </div>
-</section>
+</div>

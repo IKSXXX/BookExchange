@@ -1,34 +1,73 @@
 @model List<AdminUserListItemViewModel>
 @{ ViewData["Title"] = "Пользователи"; }
 
-<section class="section">
-    <h1>👥 Пользователи</h1>
-    <a asp-action="Index" class="btn btn-exchange">← Назад</a>
-    <div class="panel" style="margin-top: 1rem;">
-        <table class="table">
-            <thead>
-                <tr><th>Имя</th><th>Email</th><th>Рейтинг</th><th>Книг</th><th>Регистрация</th><th>Статус</th><th>Действия</th></tr>
-            </thead>
-            <tbody>
-                @foreach (var u in Model)
-                {
-                    <tr>
-                        <td><a asp-controller="User" asp-action="Details" asp-route-id="@u.Id">@u.UserName</a></td>
-                        <td>@u.Email</td>
-                        <td>@u.Rating.ToString("0.0")</td>
-                        <td>@u.BooksCount</td>
-                        <td>@u.RegistrationDate.ToLocalTime().ToString("dd.MM.yyyy")</td>
-                        <td>
-                            @if (u.IsBlocked) { <span class="chip chip--danger">Заблокирован</span> } else { <span class="chip chip--ok">Активен</span> }
-                            @if (u.IsAdmin) { <span class="chip">Admin</span> }
-                        </td>
-                        <td>
-                            <form asp-action="ToggleBlock" method="post" class="inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@u.Id" /><button class="btn btn-exchange">@(u.IsBlocked ? "Разблокировать" : "Блок")</button></form>
-                            <form asp-action="ToggleAdmin" method="post" class="inline-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@u.Id" /><button class="btn btn-exchange">@(u.IsAdmin ? "Снять Admin" : "Сделать Admin")</button></form>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+<div class="section--gray" style="padding:2rem 0; min-height:calc(100vh - 64px);">
+    <div class="container">
+        <a asp-action="Index" class="btn btn-ghost btn-sm mb-4">
+            <svg class="icon"><use href="#i-arrow-left"/></svg>
+            В админку
+        </a>
+
+        <div class="flex items-center justify-between mb-6" style="flex-wrap:wrap;gap:1rem;">
+            <div>
+                <h1 class="mb-1">Пользователи</h1>
+                <p class="text-muted text-sm">Всего: <strong>@Model.Count</strong></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-wrap" style="border:none;border-radius:0;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Имя</th>
+                            <th>Email</th>
+                            <th>Рейтинг</th>
+                            <th>Книг</th>
+                            <th>Регистрация</th>
+                            <th>Статус</th>
+                            <th style="text-align:right;">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in Model)
+                        {
+                            <tr>
+                                <td><a asp-controller="User" asp-action="Details" asp-route-id="@u.Id" style="font-weight:600;color:var(--gray-900);">@u.UserName</a></td>
+                                <td class="text-muted">@u.Email</td>
+                                <td>
+                                    <span class="flex items-center gap-1">
+                                        <svg class="icon rating-star icon--fill"><use href="#i-star"/></svg>
+                                        @u.Rating.ToString("0.0")
+                                    </span>
+                                </td>
+                                <td>@u.BooksCount</td>
+                                <td class="text-muted text-sm">@u.RegistrationDate.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    <div class="flex gap-1" style="flex-wrap:wrap;">
+                                        @if (u.IsBlocked) { <span class="badge badge--red">Заблокирован</span> } else { <span class="badge badge--green">Активен</span> }
+                                        @if (u.IsAdmin) { <span class="badge badge--blue">Admin</span> }
+                                    </div>
+                                </td>
+                                <td style="text-align:right;">
+                                    <div class="flex gap-1 justify-end" style="flex-wrap:wrap;">
+                                        <form asp-action="ToggleBlock" method="post" style="margin:0;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@u.Id" />
+                                            <button class="btn btn-outline btn-sm">@(u.IsBlocked ? "Разблокировать" : "Заблокировать")</button>
+                                        </form>
+                                        <form asp-action="ToggleAdmin" method="post" style="margin:0;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@u.Id" />
+                                            <button class="btn btn-ghost btn-sm">@(u.IsAdmin ? "Снять Admin" : "Дать Admin")</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-</section>
+</div>

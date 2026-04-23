@@ -1,117 +1,188 @@
 @model BookCatalogViewModel
 @{
-    ViewData["Title"] = "Каталог книг";
+    ViewData["Title"] = "Каталог";
 }
 
-<section class="section">
-    <h1 class="section-title">Каталог книг</h1>
+<div class="section--tight" style="padding-top:1rem;">
+    <div class="container">
+        <form id="catalogForm" method="get">
+            <div class="catalog-layout">
+                <aside class="catalog-side">
+                    <div class="card filters-card">
+                        <h3>
+                            <svg class="icon"><use href="#i-filter"/></svg>
+                            Фильтры
+                        </h3>
 
-    <form id="catalogForm" method="get" class="catalog-layout">
-        <!-- Фильтры слева -->
-        <aside class="catalog-filters">
-            <h3>Фильтры</h3>
+                        <div class="filter-group">
+                            <label>Поиск</label>
+                            <input type="text" name="search" class="form-input form-input--search" value="@Model.SearchQuery" placeholder="Название или автор..." />
+                        </div>
 
-            <div class="filter-group">
-                <label class="filter-label">Поиск</label>
-                <input type="text" name="search" id="searchInput" value="@Model.SearchQuery" placeholder="Название или автор..." class="form-input" />
-            </div>
+                        <div class="filter-group">
+                            <label>Жанры</label>
+                            <div class="stack-sm" style="max-height: 180px; overflow-y:auto;">
+                                @foreach (var g in Model.AllGenres)
+                                {
+                                    var checkedAttr = Model.SelectedGenres.Contains(g) ? "checked" : null;
+                                    <label class="flex items-center gap-2" style="font-weight:400;font-size:.875rem;color:var(--gray-700);cursor:pointer;">
+                                        <input type="checkbox" name="genresArr" value="@g" @checkedAttr />
+                                        <span>@g</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
 
-            <div class="filter-group">
-                <label class="filter-label">Жанр</label>
-                @foreach (var g in Model.AllGenres)
-                {
-                    var checkedAttr = Model.SelectedGenres.Contains(g) ? "checked" : null;
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="genresArr" value="@g" @checkedAttr />
-                        @g
-                    </label>
-                }
-            </div>
+                        <div class="filter-group">
+                            <label>Состояние</label>
+                            <div class="stack-sm">
+                                @foreach (var c in Enum.GetValues<BookCondition>())
+                                {
+                                    var checkedAttr = Model.SelectedConditions.Contains(c) ? "checked" : null;
+                                    <label class="flex items-center gap-2" style="font-weight:400;font-size:.875rem;color:var(--gray-700);cursor:pointer;">
+                                        <input type="checkbox" name="conditionsArr" value="@c" @checkedAttr />
+                                        <span>@MappingProfile.ConditionToLabel(c)</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
 
-            <div class="filter-group">
-                <label class="filter-label">Состояние</label>
-                @foreach (var c in Enum.GetValues<BookCondition>())
-                {
-                    var checkedAttr = Model.SelectedConditions.Contains(c) ? "checked" : null;
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="conditionsArr" value="@c" @checkedAttr />
-                        @MappingProfile.ConditionToLabel(c)
-                    </label>
-                }
-            </div>
+                        <div class="filter-group">
+                            <label class="flex items-center gap-2" style="font-weight:500;cursor:pointer;">
+                                <input type="checkbox" name="onlyAvailable" value="true" @(Model.OnlyAvailable ? "checked" : null) />
+                                <span>Только доступные</span>
+                            </label>
+                        </div>
 
-            <div class="filter-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" name="onlyAvailable" value="true" @(Model.OnlyAvailable ? "checked" : null) />
-                    Только доступные
-                </label>
-            </div>
+                        <input type="hidden" name="genres" id="hiddenGenres" />
+                        <input type="hidden" name="conditions" id="hiddenConditions" />
 
-            <!-- Скрытые поля для CSV-представления мультивыбора (их читает контроллер). -->
-            <input type="hidden" name="genres" id="hiddenGenres" />
-            <input type="hidden" name="conditions" id="hiddenConditions" />
+                        <div class="flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary w-full">
+                                Применить
+                            </button>
+                            <a href="/catalog" class="btn btn-outline" title="Сбросить фильтры">
+                                <svg class="icon"><use href="#i-x"/></svg>
+                            </a>
+                        </div>
+                    </div>
 
-            <button type="submit" class="btn btn-primary w-full">Применить</button>
-            <a href="/catalog" class="btn btn-exchange w-full" style="margin-top: 0.5rem;">Сбросить</a>
-        </aside>
+                    <div class="ai-helper">
+                        <h3>
+                            <svg class="icon"><use href="#i-sparkles"/></svg>
+                            AI-помощник
+                        </h3>
+                        <p class="text-sm text-muted mb-3">Опишите настроение или жанр — подберём книги.</p>
+                        <textarea id="aiQuery" rows="3" placeholder="Например: фэнтези про магию..."></textarea>
+                        <button type="button" id="aiSubmit" class="btn btn-primary w-full mt-3">
+                            <svg class="icon"><use href="#i-sparkles"/></svg>
+                            Подобрать
+                        </button>
+                        <div id="aiResults" class="ai-helper__results" hidden></div>
+                    </div>
+                </aside>
 
-        <!-- Список книг -->
-        <div class="catalog-results">
-            <div class="catalog-results__meta">
-                Найдено книг: <strong>@Model.Pagination.TotalItems</strong>
-            </div>
-
-            @if (Model.Books.Count == 0)
-            {
-                <div class="panel text-center">
-                    <p>Ничего не найдено. Попробуй изменить фильтры.</p>
-                </div>
-            }
-            else
-            {
-                <div class="catalog-grid">
-                    @foreach (var b in Model.Books)
+                <div class="catalog-results">
+                    <div class="catalog-header">
+                        <h1 class="mb-1">Каталог книг</h1>
+                        <p class="text-muted text-sm">Найдено изданий: <strong>@Model.Pagination.TotalItems</strong></p>
+                    </div>
+                    @if (Model.Books.Count == 0)
                     {
-                        <partial name="_BookCard" model="b" />
+                        <div class="empty-state card">
+                            <svg class="icon"><use href="#i-search"/></svg>
+                            <h3>Ничего не найдено</h3>
+                            <p>Попробуйте изменить фильтры или сбросить их.</p>
+                            <a href="/catalog" class="btn btn-outline">Сбросить фильтры</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="book-grid">
+                            @foreach (var b in Model.Books)
+                            {
+                                <partial name="_BookCard" model="b" />
+                            }
+                        </div>
                     }
                 </div>
+            </div>
 
-                <nav class="pagination">
+            @if (Model.Pagination.TotalPages > 1)
+            {
+                <nav class="pagination catalog-pagination">
                     @if (Model.Pagination.HasPrev)
                     {
-                        <a class="btn btn-exchange" href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = Model.Pagination.Page - 1 })">← Назад</a>
+                        <a href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = Model.Pagination.Page - 1 })">
+                            <svg class="icon"><use href="#i-arrow-left"/></svg>
+                        </a>
                     }
-                    <span class="pagination-info">Страница @Model.Pagination.Page из @Model.Pagination.TotalPages</span>
+                    else
+                    {
+                        <span class="is-disabled"><svg class="icon"><use href="#i-arrow-left"/></svg></span>
+                    }
+                    @for (int p = 1; p <= Model.Pagination.TotalPages; p++)
+                    {
+                        if (p == Model.Pagination.Page)
+                        {
+                            <span class="is-active">@p</span>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = p })">@p</a>
+                        }
+                    }
                     @if (Model.Pagination.HasNext)
                     {
-                        <a class="btn btn-exchange" href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = Model.Pagination.Page + 1 })">Вперёд →</a>
+                        <a href="@Url.Action("Index", new { search = Model.SearchQuery, genres = string.Join(",", Model.SelectedGenres), conditions = string.Join(",", Model.SelectedConditions), onlyAvailable = Model.OnlyAvailable, page = Model.Pagination.Page + 1 })">
+                            <svg class="icon"><use href="#i-arrow-right"/></svg>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="is-disabled"><svg class="icon"><use href="#i-arrow-right"/></svg></span>
                     }
                 </nav>
             }
-        </div>
-    </form>
-</section>
+        </form>
+    </div>
+</div>
 
 @section Scripts {
     <script>
-        // При сабмите формы преобразуем массив чекбоксов в CSV-строку для одного параметра
-        // (так проще ссылаться на URL и пагинация).
         document.getElementById('catalogForm').addEventListener('submit', e => {
             const genres = [...document.querySelectorAll('input[name="genresArr"]:checked')].map(c => c.value).join(',');
             const conditions = [...document.querySelectorAll('input[name="conditionsArr"]:checked')].map(c => c.value).join(',');
             document.getElementById('hiddenGenres').value = genres;
             document.getElementById('hiddenConditions').value = conditions;
-
-            // Убираем временные массив-поля, чтобы не попадали в query-string.
             document.querySelectorAll('input[name="genresArr"]').forEach(c => c.removeAttribute('name'));
             document.querySelectorAll('input[name="conditionsArr"]').forEach(c => c.removeAttribute('name'));
         });
 
-        // Debounce для поиска: через 500 мс после окончания ввода автоматически сабмитим форму.
-        let t;
-        document.getElementById('searchInput').addEventListener('input', () => {
-            clearTimeout(t);
-            t = setTimeout(() => document.getElementById('catalogForm').requestSubmit(), 500);
+        document.getElementById('aiSubmit')?.addEventListener('click', async () => {
+            const q = document.getElementById('aiQuery').value.trim();
+            const box = document.getElementById('aiResults');
+            if (!q) return;
+            box.hidden = false;
+            box.innerHTML = '<p class="text-sm text-muted">Ищу...</p>';
+            try {
+                const fd = new FormData();
+                fd.append('query', q);
+                const res = await fetch('/ai/recommend', { method: 'POST', body: fd });
+                const data = await res.json();
+                const books = data.books || [];
+                if (!books.length) { box.innerHTML = '<p class="text-sm text-muted">Ничего не нашлось.</p>'; return; }
+                box.innerHTML = '<div class="ai-helper__list">' + books.slice(0, 5).map(b => `
+                    <a class="ai-helper__item" href="/book/details/${b.id}">
+                        ${b.coverImagePath ? `<img src="${b.coverImagePath}" alt="${b.title}"/>` : '<div class="book-card__placeholder"><svg class="icon"><use href="#i-book"/></svg></div>'}
+                        <div class="ai-helper__item-body">
+                            <div class="ai-helper__item-title">${b.title}</div>
+                            <div class="ai-helper__item-sub">${b.author}</div>
+                        </div>
+                    </a>`).join('') + '</div>';
+            } catch {
+                box.innerHTML = '<p class="text-sm text-muted">Ошибка запроса.</p>';
+            }
         });
     </script>
 }

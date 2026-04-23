@@ -1,36 +1,52 @@
 @model LoginViewModel
-@{ ViewData["Title"] = "Вход"; }
+@{
+    ViewData["Title"] = "Вход";
+    Layout = "_Layout";
+}
 
-<section class="section">
-    <div class="panel" style="max-width: 480px; margin: 2rem auto;">
-        <h1>Вход</h1>
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="text-center mb-4">
+            <div class="auth-logo">
+                <svg class="icon"><use href="#i-book"/></svg>
+            </div>
+            <h1>С возвращением</h1>
+            <p class="auth-card__sub">Войдите, чтобы продолжить обмены</p>
+        </div>
+
         <form asp-action="Login" method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="ReturnUrl" />
-            <div asp-validation-summary="All" class="text-danger"></div>
+            <div asp-validation-summary="All" class="text-danger text-sm"></div>
 
             <div class="form-group">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" class="form-input" type="email" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" type="email" autocomplete="email" class="form-input" placeholder="you@example.com" />
+                <span asp-validation-for="Email" class="text-danger text-sm"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Password">Пароль</label>
-                <input asp-for="Password" class="form-input" type="password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+                <label asp-for="Password" class="form-label">Пароль</label>
+                <input asp-for="Password" type="password" autocomplete="current-password" class="form-input" placeholder="••••••••" />
+                <span asp-validation-for="Password" class="text-danger text-sm"></span>
             </div>
-            <label class="checkbox-label">
-                <input asp-for="RememberMe" type="checkbox" /> @Html.DisplayNameFor(m => m.RememberMe)
+            <label class="checkbox-row">
+                <input asp-for="RememberMe" type="checkbox" />
+                <span>Запомнить меня</span>
             </label>
-            <button class="btn btn-primary w-full" style="margin-top: 1rem;">Войти</button>
+
+            <button type="submit" class="btn btn-primary btn-lg w-full mt-2">
+                Войти
+            </button>
         </form>
-        <p class="text-muted text-center" style="margin-top:1rem;">
+
+        <div class="auth-card__footer">
             Нет аккаунта? <a asp-action="Register">Зарегистрироваться</a>
-        </p>
-        <div class="text-muted text-center" style="margin-top: 1rem; font-size: 0.85rem;">
-            <strong>Тестовые аккаунты:</strong><br/>
-            Админ: admin@bookswap.com / Admin123!<br/>
-            Пользователь: anna@bookswap.com / Pass123!
+        </div>
+
+        <div class="auth-tip">
+            <strong>Тестовые аккаунты</strong>
+            <div><code>admin@bookswap.com</code> / <code>Admin123!</code></div>
+            <div><code>anna@bookswap.com</code> / <code>Pass123!</code></div>
         </div>
     </div>
-</section>
+</div>

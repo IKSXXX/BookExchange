@@ -15,7 +15,7 @@ namespace BookExchange.Web.Controllers;
 /// </summary>
 public class BookController : Controller
 {
-    private const int PageSize = 12;
+    private const int PageSize = 24;
 
     private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;

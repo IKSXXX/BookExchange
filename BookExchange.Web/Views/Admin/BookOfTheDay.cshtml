@@ -1,34 +1,55 @@
 @model SetBookOfDayViewModel
 @{ ViewData["Title"] = "Книга дня"; }
 
-<section class="section">
-    <h1>⭐ Книга дня</h1>
-    <a asp-action="Index" class="btn btn-exchange">← Назад</a>
+<div class="section--gray" style="padding:2rem 0; min-height:calc(100vh - 64px);">
+    <div class="container">
+        <a asp-action="Index" class="btn btn-ghost btn-sm mb-6">
+            <svg class="icon"><use href="#i-arrow-left"/></svg>
+            В админку
+        </a>
 
-    <div class="panel" style="margin-top: 1rem;">
-        <form asp-action="BookOfTheDay" method="post">
-            @Html.AntiForgeryToken()
-            <div class="form-group">
-                <label>Дата</label>
-                <input type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" class="form-input" />
+        <div class="form-wrap">
+            <div class="mb-6">
+                <h1 class="mb-2">Книга дня</h1>
+                <p class="text-muted">Выберите книгу, которая появится на главной странице в указанную дату.</p>
             </div>
-            <div class="form-group">
-                <label>Книга</label>
-                <select name="bookId" class="form-input">
-                    @foreach (var b in Model.AvailableBooks)
-                    {
-                        if (Model.CurrentBookOfDayId == b.Id)
-                        {
-                            <option value="@b.Id" selected>@b.Title — @b.Author</option>
-                        }
-                        else
-                        {
-                            <option value="@b.Id">@b.Title — @b.Author</option>
-                        }
-                    }
-                </select>
-            </div>
-            <button class="btn btn-primary">Сохранить</button>
-        </form>
+
+            <form asp-action="BookOfTheDay" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="card">
+                    <div class="card-body stack">
+                        <div class="form-group">
+                            <label class="form-label">Дата</label>
+                            <input type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" class="form-input" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Книга</label>
+                            <select name="bookId" class="form-input form-select">
+                                @foreach (var b in Model.AvailableBooks)
+                                {
+                                    if (Model.CurrentBookOfDayId == b.Id)
+                                    {
+                                        <option value="@b.Id" selected>@b.Title — @b.Author</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@b.Id">@b.Title — @b.Author</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mt-6">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <svg class="icon"><use href="#i-check"/></svg>
+                        Сохранить
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline btn-lg">Отмена</a>
+                </div>
+            </form>
+        </div>
     </div>
-</section>
+</div>
