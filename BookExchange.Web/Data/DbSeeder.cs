@@ -136,7 +136,6 @@ public static class DbSeeder
             }
             await ctx.SaveChangesAsync();
 
-            // 6. Вопросы для мини-игры
             ctx.QuizQuestions.AddRange(
                 new QuizQuestion { BookId = books[0].Id, Quote = "Тварь я дрожащая или право имею?", CorrectAnswer = "Преступление и наказание", Option2 = "Война и мир", Option3 = "Мастер и Маргарита", Option4 = "1984" },
                 new QuizQuestion { BookId = books[1].Id, Quote = "Большой Брат следит за тобой.", CorrectAnswer = "1984", Option2 = "Заводной апельсин", Option3 = "Процесс", Option4 = "Игра престолов" },
@@ -146,11 +145,9 @@ public static class DbSeeder
             );
             await ctx.SaveChangesAsync();
 
-            // 7. Книга дня на сегодня
             ctx.BooksOfTheDay.Add(new BookOfTheDay { BookId = books[5].Id, Date = DateTime.UtcNow.Date });
             await ctx.SaveChangesAsync();
 
-            // 8. Одна тема обсуждения для наглядности
             var disc = new Discussion { BookId = books[1].Id, UserId = userMap["anna"].Id, Title = "Актуальна ли антиутопия сегодня?" };
             ctx.Discussions.Add(disc);
             await ctx.SaveChangesAsync();
@@ -161,7 +158,6 @@ public static class DbSeeder
             await ctx.SaveChangesAsync();
         }
 
-        // Идемпотентно добавляем новые книги, которых ещё нет в БД (по названию).
         var extraBooks = new List<Book>
         {
             new() { Title = "Великий Гэтсби",       Author = "Ф.С. Фицджеральд", Genre = "Классика",   Condition = BookCondition.Excellent, Year = 1925, Description = "История любви и разочарования в эпоху джаза.", CoverImagePath = "https://images.unsplash.com/photo-1535905557558-afc4877a26fc?w=400&h=600&fit=crop", OwnerId = userMap["maria"].Id,  IsAvailable = true },
@@ -176,8 +172,6 @@ public static class DbSeeder
         }
         await ctx.SaveChangesAsync();
 
-        // Идемпотентно гарантируем наличие Книги дня на сегодняшнюю дату,
-        // иначе карточка «Книга дня» исчезает с главной после смены суток.
         var today = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Utc);
         if (!await ctx.BooksOfTheDay.AnyAsync(b => b.Date == today))
         {
