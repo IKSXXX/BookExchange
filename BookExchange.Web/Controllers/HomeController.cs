@@ -25,17 +25,11 @@ public class HomeController : Controller
     [HttpGet("/")]
     public async Task<IActionResult> Index()
     {
-        var today = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Utc);
-        // Сначала ищем запись на сегодня, иначе берём самую свежую — чтобы карточка «Книга дня»
-        // всегда была видна, даже если админ не обновил её за сегодня.
+        var today = DateTime.UtcNow.Date;
         var bod = await _uow.BooksOfTheDay.Query()
-                      .Where(b => b.Date == today)
-                      .Include(b => b.Book!).ThenInclude(bk => bk.Owner)
-                      .FirstOrDefaultAsync()
-                  ?? await _uow.BooksOfTheDay.Query()
-                      .OrderByDescending(b => b.Date)
-                      .Include(b => b.Book!).ThenInclude(bk => bk.Owner)
-                      .FirstOrDefaultAsync();
+            .Where(b => b.Date == today)
+            .Include(b => b.Book!).ThenInclude(bk => bk.Owner)
+            .FirstOrDefaultAsync();
 
         var recent = await _uow.Books.Query()
             .Where(b => !b.IsHidden)

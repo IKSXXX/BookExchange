@@ -130,9 +130,7 @@ public class AdminController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> BookOfTheDay(int bookId, DateTime date)
     {
-        // Postgres timestamptz требует Kind=Utc — иначе Npgsql кидает исключение.
-        var utcDate = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
-        var existing = (await _uow.BooksOfTheDay.FindAsync(b => b.Date == utcDate)).FirstOrDefault();
+        var existing = (await _uow.BooksOfTheDay.FindAsync(b => b.Date == date.Date)).FirstOrDefault();
         if (existing != null)
         {
             existing.BookId = bookId;
@@ -140,7 +138,7 @@ public class AdminController : Controller
         }
         else
         {
-            await _uow.BooksOfTheDay.AddAsync(new BookOfTheDay { BookId = bookId, Date = utcDate });
+            await _uow.BooksOfTheDay.AddAsync(new BookOfTheDay { BookId = bookId, Date = date.Date });
         }
         await _uow.SaveChangesAsync();
         TempData["Success"] = "Книга дня обновлена.";
