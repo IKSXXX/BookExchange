@@ -5,10 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookExchange.Web.Data;
 
-/// <summary>
-/// Сидер: создаёт роли, админа и тестовые данные (пользователей, книги, отзывы, вопросы).
-/// Запускается один раз при старте приложения, идемпотентно (проверяем, есть ли уже).
-/// </summary>
 public static class DbSeeder
 {
     public const string AdminRole = "Admin";
@@ -23,17 +19,14 @@ public static class DbSeeder
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
-        // Накатываем миграции (на Windows вручную: dotnet ef database update, но в dev удобно автоматом).
         await ctx.Database.MigrateAsync();
 
-        // 1. Роли
         foreach (var role in new[] { AdminRole, UserRole })
         {
             if (!await roleManager.RoleExistsAsync(role))
                 await roleManager.CreateAsync(new IdentityRole(role));
         }
 
-        // 2. Админ
         var admin = await userManager.FindByEmailAsync(AdminEmail);
         if (admin == null)
         {
@@ -47,14 +40,11 @@ public static class DbSeeder
             };
             await userManager.CreateAsync(admin, AdminPassword);
         }
-        // Всегда проверяем роли: если по какой-то причине Admin-роль слетела —
-        // восстанавливаем, чтобы админ-панель не пропадала после изменения схемы/ручных правок.
         if (!await userManager.IsInRoleAsync(admin, AdminRole))
             await userManager.AddToRoleAsync(admin, AdminRole);
         if (!await userManager.IsInRoleAsync(admin, UserRole))
             await userManager.AddToRoleAsync(admin, UserRole);
 
-        // 3. Тестовые пользователи (если их ещё нет)
         var demoUsers = new (string userName, string email, string location, string avatar)[]
         {
             ("anna",    "anna@bookswap.com",    "Москва",           "https://randomuser.me/api/portraits/women/1.jpg"),
@@ -87,7 +77,6 @@ public static class DbSeeder
             userMap[name] = u;
         }
 
-        // 4. Книги (если таблица пуста)
         if (!await ctx.Books.AnyAsync())
         {
             var books = new List<Book>
@@ -115,8 +104,6 @@ public static class DbSeeder
             await ctx.Books.AddRangeAsync(books);
             await ctx.SaveChangesAsync();
 
-            // 5. Отзывы (придают пользователям рейтинг)
-            // Создаём синтетическую completed-заявку для каждой пары from/to, чтобы отзыв имел FK.
             async Task<int> MakeFakeExchange(string senderId, string receiverId, int bookRequestedId)
             {
                 var ex = new ExchangeRequest
@@ -142,7 +129,6 @@ public static class DbSeeder
             );
             await ctx.SaveChangesAsync();
 
-            // Пересчитываем рейтинг пользователей (среднее по ReviewsReceived).
             foreach (var u in userMap.Values)
             {
                 var rs = await ctx.Reviews.Where(r => r.ToUserId == u.Id).Select(r => r.Rating).ToListAsync();
